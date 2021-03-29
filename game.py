@@ -9,28 +9,28 @@ CENTER_X = SCREEN_WIDTH/2
 CENTER_Y = SCREEN_HEIGHT/2
 # INITIAL_D = 'Takumi'
 INITIAL_THRUST = 1
+INITIAL_DAMPING = 0
 
 
 class Rocket: #Creates rocket class
-    def __init__(self, x, y, thrust):
-        # Movement variables
+    def __init__(self, x, y, thrust, damping):
+        # Position variables
         self.x = x #Symbolic X position of rocket (Rocket stays at 0, 0 and everything is moved around it)
         self.y = y #Symbolic Y position of rocket
-        self.velocity_y = 0 #
+        
+        #Velocity Variables
         self.velocity_x = 0
-
-        # force variables
-        self.thrust = thrust
-        self.damping_force = 0
+        self.velocity_y = 0
 
         # active variables
         self.thrusters = False
         self.dampers = False
 
         # Upgrade variables
+        self.thrust = thrust
+        self.damping = damping
 
-
-rocket = Rocket(0, 0, INITIAL_THRUST)
+rocket = Rocket(0, 0, INITIAL_THRUST, INITIAL_DAMPING)
 
 
 class Mouse:
