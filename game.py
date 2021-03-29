@@ -31,6 +31,9 @@ class Rocket: #Creates rocket class
         # Upgrade variables
         self.thrust = 1 #Acceleration of rocket (Default = 1)
         self.damping = 0 #Auto-decelleration of rocket (Default = 0)
+        self.velocity_line = False
+
+
 
 rocket = Rocket()
 
@@ -41,10 +44,8 @@ class RocketSprite(arcade.Sprite):
         self.center_x = CENTER_X
         self.center_y = CENTER_Y
     
-    def update(self):
-        mouse_x_relative = mouse.x-CENTER_X #Finds mouse x relative to position of rocket
-        mouse_y_relative = mouse.y-CENTER_Y #Finds mouse y relative to position of rocket
-        self.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708 # Angle to Mouse position - 90 degrees in radians
+    
+
 
 
 
@@ -56,7 +57,7 @@ class Mouse:
 
 mouse = Mouse()
 
-STARTING_ASTEROID_AMOUNT = 10
+STARTING_ASTEROID_AMOUNT = 30
 ASTEROID_MIN_SIZE = 5
 ASTEROID_MAX_SIZE = 75
 ASTEROID_MAX_VELOCITY = 5
@@ -68,6 +69,7 @@ def generate_asteroids():
     x = (int(round(rocket.x, -3)/1000))
     y = (int(round(rocket.y, -3)/1000))
 
+
     nearby_chunks = []
 
     for i in range(-1, 2):
@@ -78,7 +80,6 @@ def generate_asteroids():
     for chunk in chunks:
         if chunk not in nearby_chunks:
             to_pop.append(chunk)
-            print('Popped', chunk)
     for chunk in to_pop:
         chunks.pop(chunk)
 
@@ -87,6 +88,8 @@ def generate_asteroids():
 
     
     for chunk in nearby_chunks:
+        if chunk == (1, 0):
+            continue
         if chunk not in chunks:
             chunks[chunk] = []
 
@@ -150,6 +153,13 @@ class MyGameWindow(arcade.Window):
         for chunk in chunks:
             for asteroid in chunks[chunk]:
                 arcade.draw_circle_filled(asteroid['x']-rocket.x, asteroid['y']-rocket.y, asteroid['size'], arcade.color.GRAY)
+        
+        if rocket.velocity_line:
+            arcade.draw_line(CENTER_X, CENTER_Y, CENTER_X+rocket.velocity_x, CENTER_Y + rocket.velocity_y, arcade.color.RED)
+
+        mouse_x_relative = mouse.x-CENTER_X #Finds mouse x relative to position of rocket
+        mouse_y_relative = mouse.y-CENTER_Y #Finds mouse y relative to position of rocket
+        self.rocket_sprite.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708 # Angle to Mouse position - 90 degrees in radians
 
 
         self.rocket_list.draw()
@@ -200,6 +210,8 @@ class MyGameWindow(arcade.Window):
         mouse.x = x 
         mouse.y = y
 
+
+print('Bruh')
 
 window = MyGameWindow(SCREEN_WIDTH, SCREEN_HEIGHT, 'My game window')
 window.setup()
