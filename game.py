@@ -64,7 +64,7 @@ ASTEROID_MAX_VELOCITY = 5
 chunks = {}
 
 def generate_asteroids():
-
+    global chunks
     x = (int(round(rocket.x, -3)/1000))
     y = (int(round(rocket.y, -3)/1000))
 
@@ -74,11 +74,18 @@ def generate_asteroids():
         for j in range(-1, 2):
             nearby_chunks.append((x+i, y+j))
     
+    to_pop = []
+    for chunk in chunks:
+        if chunk not in nearby_chunks:
+            to_pop.append(chunk)
+            print('Popped', chunk)
+    for chunk in to_pop:
+        chunks.pop(chunk)
 
 
 
 
-    global chunks
+    
     for chunk in nearby_chunks:
         if chunk not in chunks:
             chunks[chunk] = []
