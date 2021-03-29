@@ -56,31 +56,45 @@ class Mouse:
 
 mouse = Mouse()
 
-
+STARTING_ASTEROID_AMOUNT = 10
 ASTEROID_MIN_SIZE = 5
 ASTEROID_MAX_SIZE = 75
 ASTEROID_MAX_VELOCITY = 0.1
 
-asteroids = []
+chunks = {}
 
-def generate_asteroids(amount, area):
-    for i in range(amount):
-        velocity_x = random.random()*ASTEROID_MAX_VELOCITY
-        velocity_y = random.random()*ASTEROID_MAX_VELOCITY
+def generate_asteroids(chunk):
+    global chunks
+    chunks[chunk] = []
 
-        if random.randint(0,1):
+    min_x = chunk[0] * 1000
+    min_y = chunk[1] * 1000
+
+    velocity_x = random.random()*ASTEROID_MAX_VELOCITY
+    velocity_y = random.random()*ASTEROID_MAX_VELOCITY
+
+
+
+    for i in range(STARTING_ASTEROID_AMOUNT):
+        if random.randint(0, 1):
             velocity_x = -velocity_x
-        if random.randint(0,1):
+        if random.randint(0, 1):
             velocity_y = -velocity_y
-        asteroids.append({
-                        'x':random.randint(-area, area),
-                        'y':random.randint(-area, area),
-                        'velocity_x':velocity_x,
-                        'velocity_y':velocity_y,
-                        'size':random.randint(ASTEROID_MIN_SIZE, ASTEROID_MAX_SIZE)
-                        })
+        asteroid = {
+                    'x':random.randint(min_x, min_x + 1000),
+                    'y':random.randint(min_y, min_y + 1000),
+                    'size':random.randint(ASTEROID_MIN_SIZE, ASTEROID_MAX_SIZE),
+                    'velocity_x':velocity_x,
+                    'velocity_y':velocity_y
+        }
 
-generate_asteroids(100, 1000)
+
+
+        chunks[chunk].append(asteroid)
+    
+
+
+
 
 
 class MyGameWindow(arcade.Window):
@@ -109,25 +123,36 @@ class MyGameWindow(arcade.Window):
 
     def on_draw(self):
         arcade.start_render()
-
         
-        n = 0
-        for asteroid in asteroids:
+        for chunk in chunks:
+            for asteroid in chunks[chunk]:
+                arcade.draw_circle_filled(asteroid['x']-rocket.x, asteroid['y']-rocket.y, asteroid['size'], arcade.color.GRAY)
 
-            arcade.draw_circle_filled(asteroid['x']-rocket.x, asteroid['y']-rocket.y, asteroid['size'], arcade.color.GRAY)
-            asteroids[n]['x'] += asteroid['velocity_x']
-            asteroids[n]['y'] += asteroid['velocity_y']
-            
-            n+=1
-
-        arcade.draw_circle_filled(
-            CENTER_X-rocket.x, CENTER_Y-rocket.y, 10, arcade.color.GRAY)
 
         self.rocket_list.draw()
 
     def on_update(self, delta_time):
+        global chunks
+        chunk = (int(round(rocket.x, -3)/1000), int(round(rocket.y, -3)/1000))
+
+        if chunk not in chunks:
+            generate_asteroids(chunk)
+        
+        for chunk in chunks:
+            n = 0
+            print(chunk)
+            for asteroid in chunks[chunk]:
+                chunks[chunk][n]['x'] += chunks[chunk][n]['velocity_x'] * delta_time
+                chunks[chunk][n]['y'] += chunks[chunk][n]['velocity_y'] * delta_time
+                n += 1
+        #print(chunks[(1, 0)][0]['x'])
+
+
+        
         rocket.x += rocket.velocity_x*delta_time #Delta time is the time between frames
         rocket.y += rocket.velocity_y*delta_time
+
+
 
         if rocket.thrusters:
             mouse_x_relative = mouse.x-CENTER_X #Finds mouse x relative to position of rocket
