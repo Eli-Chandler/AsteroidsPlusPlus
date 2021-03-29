@@ -1,0 +1,29 @@
+To do: Make asteroids into sprites for optimization
+
+
+
+Game:
+
+You control a spaceship with the mouse and click
+
+You have a landing base that you have to land at to get upgrades
+
+You fly through a field of asteroids and collect coins which get you upgrades
+
+You have limited fuel and if you crash you lose all your coins
+
+Upgrades:
+
+Dampers - hold right click to slow down the rocket ship
+
+Sponsorship - Get near misses with asteroids to get coins
+
+Speed adjuster - Use the scroll wheel to change thrust force
+
+Blaster - Used to shoot asteroids
+
+Tracter beam - used to collect coins
+
+Fuel upgrade - More fuel
+
+Asteroid miner - green asteroids can be used to mine fuel from
