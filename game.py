@@ -115,8 +115,8 @@ class MyGameWindow(arcade.Window):
         for asteroid in asteroids:
 
             arcade.draw_circle_filled(asteroid['x']-rocket.x, asteroid['y']-rocket.y, asteroid['size'], arcade.color.GRAY)
-            #asteroids[n]['x'] += asteroid['velocity_x']
-            #asteroids[n]['y'] += asteroid['velocity_y']
+            asteroids[n]['x'] += asteroid['velocity_x']
+            asteroids[n]['y'] += asteroid['velocity_y']
             
             n+=1
 
