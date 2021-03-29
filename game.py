@@ -1,6 +1,7 @@
 import arcade
 from arcade.application import MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT
 import math
+import random
 
 
 SCREEN_WIDTH = 1280
@@ -11,6 +12,7 @@ SPRITE_SCALING = 1
 CENTER_X = SCREEN_WIDTH/2
 CENTER_Y = SCREEN_HEIGHT/2
 # INITIAL_D = 'Takumi'
+
 
 class Rocket: #Creates rocket class
     def __init__(self):
@@ -33,7 +35,6 @@ class Rocket: #Creates rocket class
 rocket = Rocket()
 
 
-
 class RocketSprite(arcade.Sprite):
     def __init__(self, image, scale):
         super().__init__(image, scale)
@@ -43,7 +44,7 @@ class RocketSprite(arcade.Sprite):
     def update(self):
         mouse_x_relative = mouse.x-CENTER_X #Finds mouse x relative to position of rocket
         mouse_y_relative = mouse.y-CENTER_Y #Finds mouse y relative to position of rocket
-        self.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708
+        self.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708 # Angle to Mouse position - 90 degrees in radians
 
 
 
@@ -54,6 +55,32 @@ class Mouse:
 
 
 mouse = Mouse()
+
+
+ASTEROID_MIN_SIZE = 5
+ASTEROID_MAX_SIZE = 75
+ASTEROID_MAX_VELOCITY = 0.1
+
+asteroids = []
+
+def generate_asteroids(amount, area):
+    for i in range(amount):
+        velocity_x = random.random()*ASTEROID_MAX_VELOCITY
+        velocity_y = random.random()*ASTEROID_MAX_VELOCITY
+
+        if random.randint(0,1):
+            velocity_x = -velocity_x
+        if random.randint(0,1):
+            velocity_y = -velocity_y
+        asteroids.append({
+                        'x':random.randint(-area, area),
+                        'y':random.randint(-area, area),
+                        'velocity_x':velocity_x,
+                        'velocity_y':velocity_y,
+                        'size':random.randint(ASTEROID_MIN_SIZE, ASTEROID_MAX_SIZE)
+                        })
+
+generate_asteroids(100, 1000)
 
 
 class MyGameWindow(arcade.Window):
@@ -80,13 +107,22 @@ class MyGameWindow(arcade.Window):
         self.rocket_list.append(self.rocket_sprite)
 
 
-
     def on_draw(self):
         arcade.start_render()
 
+        
+        n = 0
+        for asteroid in asteroids:
+
+            arcade.draw_circle_filled(asteroid['x']-rocket.x, asteroid['y']-rocket.y, asteroid['size'], arcade.color.GRAY)
+            #asteroids[n]['x'] += asteroid['velocity_x']
+            #asteroids[n]['y'] += asteroid['velocity_y']
+            
+            n+=1
+
         arcade.draw_circle_filled(
             CENTER_X-rocket.x, CENTER_Y-rocket.y, 10, arcade.color.GRAY)
-        
+
         self.rocket_list.draw()
 
     def on_update(self, delta_time):
