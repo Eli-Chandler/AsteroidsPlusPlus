@@ -7,6 +7,9 @@ SCREEN_HEIGHT = 720
 MOUSE_X = 0
 MOUSE_Y = 0
 
+CHUNK_SIZE = 500
+CHUNK_ASTEROID_COUNT = 25
+
 class Rocket(arcade.Sprite):
     def __init__(self, image):
         super().__init__(image)
@@ -41,8 +44,8 @@ class Rocket(arcade.Sprite):
     def update_angle(self):
         mouse_x_relative = MOUSE_X - SCREEN_WIDTH/2
         mouse_y_relative = MOUSE_Y - SCREEN_HEIGHT/2
-
         self.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708
+
 
 
 ASTEROID_MIN_SIZE = 0.05
@@ -51,12 +54,12 @@ ASTEROID_MAX_SIZE = 0.4
 ASTEROID_MAX_VELOCITY = 0.1
 ASTEROID_MAX_ROTATION_SPEED = 1
 class Asteroid(arcade.Sprite):
-    def __init__(self, image, scale):
+    def __init__(self, image, scale, center_x, center_y):
         super().__init__(image, scale)
 
 
-        self.center_x = 100
-        self.center_y = 100
+        self.center_x = center_x
+        self.center_y = center_y
 
         self.delta_x = random.uniform(-ASTEROID_MAX_VELOCITY, ASTEROID_MAX_VELOCITY)
         self.delta_y = random.uniform(-ASTEROID_MAX_VELOCITY, ASTEROID_MAX_VELOCITY)
@@ -81,10 +84,22 @@ class Game(arcade.Window):
         self.asteroids_list = None
 
         self.rocket = None
+
+        self.asteroid_list = None
     def setup(self):
+        self.rocket = Rocket('sprites/rocket/still.png')
+
         self.asteroid_list = arcade.SpriteList()
 
-        self.rocket = Rocket('sprites/rocket/still.png')
+        for i in range(100):
+            asteroid_x = random.randint(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2)
+            asteroid_y = random.randint(self.rocket.center_y-SCREEN_HEIGHT/2, self.rocket.center_y+SCREEN_HEIGHT/2)
+            print(asteroid_x, asteroid_y)
+
+            asteroid = Asteroid('sprites/asteroids/Asteroid Brown.png', 1, asteroid_x , asteroid_y)
+            self.asteroid_list.append(asteroid)
+
+
 
 
     def on_draw(self):
@@ -95,7 +110,8 @@ class Game(arcade.Window):
 
         self.asteroid_list.draw()
     def on_update(self, delta_time):
-        print(delta_time**-1)
+        self.pop_asteroids()
+
         self.rocket.update(delta_time)
 
         self.asteroid_list.update()
@@ -115,11 +131,44 @@ class Game(arcade.Window):
         if button == arcade.MOUSE_BUTTON_RIGHT:
             self.rocket.damping = False
 
+    def pop_asteroids(self):
+        n = 0
+        to_pop = []
+        for asteroid in self.asteroid_list:
+            if asteroid.center_x > self.rocket.center_x + SCREEN_WIDTH/2 or asteroid.center_x < self.rocket.center_x - SCREEN_WIDTH/2:
+                to_pop.append(n)
+
+
+            elif asteroid.center_y > self.rocket.center_y + SCREEN_HEIGHT/2 or asteroid.center_y < self.rocket.center_y - SCREEN_HEIGHT/2:
+                to_pop.append(n)
+                
+            n += 1
+
+        for n in to_pop:
+            self.asteroid_list.pop(n)
+            print('Popping')
+
+    def replace_asteroids(self):
+        amount = CHUNK_ASTEROID_COUNT - len(self.asteroid_list)
+
+        for i in range(amount):
+            if random.randint(0, 1):
+                center_x = random.randint(self.rocket.center_x + SCREEN_WIDTH/2, self.rocket.center_x + SCREEN_WIDTH/2 + 100)
+            else: 
+                center_x = random.randint(self.rocket.center_x - SCREEN_WIDTH/2, self.rocket.center_x - SCREEN_WIDTH/2 + 100)
+            
+            if random.randint(0, 1):
+                center_y = random.randint(self.rocket.center_y + SCREEN_HEIGHT/2, self.rocket.center_y + SCREEN_HEIGHT/2 + 100)
+            else: 
+                center_x = random.randint(self.rocket.center_x - SCREEN_WIDTH/2, self.rocket.center_x - SCREEN_WIDTH/2 + 100)
+
+
 
     def on_mouse_motion(self, x, y, dx, dy):
         global MOUSE_X, MOUSE_Y
         MOUSE_X = x
         MOUSE_Y = y
+
 window = Game(SCREEN_WIDTH, SCREEN_HEIGHT, 'Asteroids++')
 window.setup()
 arcade.run()
