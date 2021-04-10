@@ -8,7 +8,7 @@ MOUSE_X = 0
 MOUSE_Y = 0
 
 CHUNK_SIZE = 500
-CHUNK_ASTEROID_COUNT = 25
+CHUNK_ASTEROID_COUNT = 100
 
 class Rocket(arcade.Sprite):
     def __init__(self, image):
@@ -54,9 +54,13 @@ ASTEROID_MAX_SIZE = 0.4
 ASTEROID_MAX_VELOCITY = 0.1
 ASTEROID_MAX_ROTATION_SPEED = 1
 class Asteroid(arcade.Sprite):
-    def __init__(self, image, scale, center_x, center_y):
+    def __init__(self, center_x, center_y):
+        image = 'sprites/asteroids/Asteroid Brown.png'
+        scale = 1
         super().__init__(image, scale)
 
+        
+        
 
         self.center_x = center_x
         self.center_y = center_y
@@ -91,12 +95,11 @@ class Game(arcade.Window):
 
         self.asteroid_list = arcade.SpriteList()
 
-        for i in range(100):
+        for i in range(0):
             asteroid_x = random.randint(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2)
             asteroid_y = random.randint(self.rocket.center_y-SCREEN_HEIGHT/2, self.rocket.center_y+SCREEN_HEIGHT/2)
-            print(asteroid_x, asteroid_y)
 
-            asteroid = Asteroid('sprites/asteroids/Asteroid Brown.png', 1, asteroid_x , asteroid_y)
+            asteroid = Asteroid(asteroid_x , asteroid_y)
             self.asteroid_list.append(asteroid)
 
 
@@ -110,7 +113,7 @@ class Game(arcade.Window):
 
         self.asteroid_list.draw()
     def on_update(self, delta_time):
-        self.pop_asteroids()
+        self.update_asteroids()
 
         self.rocket.update(delta_time)
 
@@ -131,36 +134,52 @@ class Game(arcade.Window):
         if button == arcade.MOUSE_BUTTON_RIGHT:
             self.rocket.damping = False
 
-    def pop_asteroids(self):
+    def get_exterior_coords(self):
+        
+        # Get coordinates of screen edge
+        left = self.rocket.center_x - SCREEN_WIDTH/2
+        right = self.rocket.center_x + SCREEN_WIDTH/2
+
+        top = self.rocket.center_y + SCREEN_HEIGHT/2
+        bottom = self.rocket.center_y - SCREEN_HEIGHT/2
+
+        return left, right, top, bottom
+
+    def update_asteroids(self):
+
+        left, right, top, bottom = [int(i) for i in self.get_exterior_coords()]
+
         n = 0
-        to_pop = []
+        new = self.asteroid_list
         for asteroid in self.asteroid_list:
-            if asteroid.center_x > self.rocket.center_x + SCREEN_WIDTH/2 or asteroid.center_x < self.rocket.center_x - SCREEN_WIDTH/2:
-                to_pop.append(n)
+            if asteroid.center_x > right + 100 or asteroid.center_x < left - 100:
+                new.pop(n)
 
 
-            elif asteroid.center_y > self.rocket.center_y + SCREEN_HEIGHT/2 or asteroid.center_y < self.rocket.center_y - SCREEN_HEIGHT/2:
-                to_pop.append(n)
+            elif asteroid.center_y > top + 100 or asteroid.center_y < bottom - 100:
+                new.pop(n)
                 
             n += 1
+        
+        self.asteroid_list = new
 
-        for n in to_pop:
-            self.asteroid_list.pop(n)
-            print('Popping')
-
-    def replace_asteroids(self):
         amount = CHUNK_ASTEROID_COUNT - len(self.asteroid_list)
 
         for i in range(amount):
-            if random.randint(0, 1):
-                center_x = random.randint(self.rocket.center_x + SCREEN_WIDTH/2, self.rocket.center_x + SCREEN_WIDTH/2 + 100)
-            else: 
-                center_x = random.randint(self.rocket.center_x - SCREEN_WIDTH/2, self.rocket.center_x - SCREEN_WIDTH/2 + 100)
             
-            if random.randint(0, 1):
-                center_y = random.randint(self.rocket.center_y + SCREEN_HEIGHT/2, self.rocket.center_y + SCREEN_HEIGHT/2 + 100)
-            else: 
-                center_x = random.randint(self.rocket.center_x - SCREEN_WIDTH/2, self.rocket.center_x - SCREEN_WIDTH/2 + 100)
+            while True:
+                center_x = random.randint(left-100, right+100)
+                center_y = random.randint(bottom-100, top+100)
+
+                if center_x > left-20 and center_x < right+20 and center_y > bottom-20 and center_y < top+20:
+                    continue
+                break
+            print(center_x)
+            self.asteroid_list.append(Asteroid(center_x, center_y))
+        
+
+
+
 
 
 
