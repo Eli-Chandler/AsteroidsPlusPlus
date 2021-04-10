@@ -94,7 +94,13 @@ class Game(arcade.Window):
         self.rocket_list = None
 
         self.asteroid_list = None
+
+        self.dead = None
+
+        self.base = None
     def setup(self):
+
+        self.dead = False
 
         self.rocket_list = arcade.SpriteList()
 
@@ -104,6 +110,8 @@ class Game(arcade.Window):
 
 
         self.asteroid_list = arcade.SpriteList(use_spatial_hash=USE_SPATIAL_HASHING)
+
+        self.base = arcade.create_rectangle_filled(0, 0, 100, 100, arcade.color.PINK_LAVENDER)
 
         for i in range(0):
             asteroid_x = random.randint(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2)
@@ -116,14 +124,24 @@ class Game(arcade.Window):
 
 
     def on_draw(self):
+        
+
         arcade.start_render()
+        self.base.draw()
+
         self.rocket.draw()
 
-        arcade.draw_circle_filled(300, 300, 10, arcade.color.AERO_BLUE)
-
         self.asteroid_list.draw()
+
+        
+
+
+        #arcade.draw_circle_filled(300, 300, 10, arcade.color.AERO_BLUE)
+
+        
+
+
     def on_update(self, delta_time):
-        print(delta_time**-1)
         self.rocket.update(delta_time)
 
         self.asteroid_list.update()
@@ -131,8 +149,13 @@ class Game(arcade.Window):
         asteroid_hit_list = arcade.check_for_collision_with_list(self.rocket, self.asteroid_list)
 
         if asteroid_hit_list:
-            print(asteroid_hit_list)
+            self.rocket.center_x = 0
+            self.rocket.center_y = 0
 
+        base_hit_list = arcade.check_for_collision_with_list(self.base, self.asteroid_list)
+
+        for asteroid in base_hit_list:
+            asteroid.kill()
 
         self.populate_asteroids()
 
