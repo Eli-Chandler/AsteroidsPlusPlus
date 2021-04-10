@@ -10,6 +10,8 @@ MOUSE_Y = 0
 CHUNK_SIZE = 500
 BASE_ASTEROID_COUNT = 100
 
+USE_SPATIAL_HASHING = False
+
 class Rocket(arcade.Sprite):
     def __init__(self, image):
         super().__init__(image)
@@ -89,11 +91,19 @@ class Game(arcade.Window):
 
         self.rocket = None
 
+        self.rocket_list = None
+
         self.asteroid_list = None
     def setup(self):
+
+        self.rocket_list = arcade.SpriteList()
+
         self.rocket = Rocket('sprites/rocket/still.png')
 
-        self.asteroid_list = arcade.SpriteList()
+        self.rocket_list.append(self.rocket)
+
+
+        self.asteroid_list = arcade.SpriteList(use_spatial_hash=USE_SPATIAL_HASHING)
 
         for i in range(0):
             asteroid_x = random.randint(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2)
@@ -113,11 +123,18 @@ class Game(arcade.Window):
 
         self.asteroid_list.draw()
     def on_update(self, delta_time):
-        self.update_asteroids()
-
+        print(delta_time**-1)
         self.rocket.update(delta_time)
 
         self.asteroid_list.update()
+
+        asteroid_hit_list = arcade.check_for_collision_with_list(self.rocket, self.asteroid_list)
+
+        if asteroid_hit_list:
+            print(asteroid_hit_list)
+
+
+        self.populate_asteroids()
 
         arcade.set_viewport(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2, self.rocket.center_y-SCREEN_HEIGHT/2, self.rocket.center_y+SCREEN_HEIGHT/2)
 
@@ -145,7 +162,7 @@ class Game(arcade.Window):
 
         return left, right, top, bottom
 
-    def update_asteroids(self):
+    def populate_asteroids(self):
 
         left, right, top, bottom = [int(i) for i in self.get_exterior_coords()]
 
