@@ -8,7 +8,7 @@ MOUSE_X = 0
 MOUSE_Y = 0
 
 CHUNK_SIZE = 500
-CHUNK_ASTEROID_COUNT = 100
+BASE_ASTEROID_COUNT = 100
 
 class Rocket(arcade.Sprite):
     def __init__(self, image):
@@ -55,7 +55,7 @@ ASTEROID_MAX_VELOCITY = 0.1
 ASTEROID_MAX_ROTATION_SPEED = 1
 class Asteroid(arcade.Sprite):
     def __init__(self, center_x, center_y):
-        image = 'sprites/asteroids/Asteroid Brown.png'
+        image = 'sprites/asteroids/brown_asteroid.png'
         scale = 1
         super().__init__(image, scale)
 
@@ -163,7 +163,7 @@ class Game(arcade.Window):
         
         self.asteroid_list = new
 
-        amount = CHUNK_ASTEROID_COUNT - len(self.asteroid_list)
+        amount = BASE_ASTEROID_COUNT - len(self.asteroid_list)
 
         for i in range(amount):
             
@@ -174,7 +174,6 @@ class Game(arcade.Window):
                 if center_x > left-20 and center_x < right+20 and center_y > bottom-20 and center_y < top+20:
                     continue
                 break
-            print(center_x)
             self.asteroid_list.append(Asteroid(center_x, center_y))
         
 
