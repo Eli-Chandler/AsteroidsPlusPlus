@@ -1,6 +1,8 @@
 import arcade
 import random
 import math
+from datetime import datetime
+
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 
@@ -29,6 +31,9 @@ class Rocket(arcade.Sprite):
         self.damping = False
 
         self.velocity_radians = 0
+
+        self.coins = 0
+
     def update(self, delta_time): 
 
         self.update_angle()
@@ -48,6 +53,14 @@ class Rocket(arcade.Sprite):
         mouse_y_relative = MOUSE_Y - SCREEN_HEIGHT/2
         self.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708
 
+    def die(self):
+        self.center_x = 0
+        self.center_y = 0
+
+        self.delta_x = 0
+        self.delta_y = 0
+
+        self.coins = 0
 
 
 ASTEROID_MIN_SIZE = 0.05
@@ -56,10 +69,12 @@ ASTEROID_MAX_SIZE = 0.4
 ASTEROID_MAX_VELOCITY = 0.1
 ASTEROID_MAX_ROTATION_SPEED = 1
 class Asteroid(arcade.Sprite):
-    def __init__(self, center_x, center_y):
-        image = 'sprites/asteroids/brown_asteroid.png'
+    def __init__(self, center_x, center_y, type = 'brown'):
+        self.type = 'brown'
+        image = f'sprites/asteroids/{self.type}_asteroid.png'
         scale = 1
         super().__init__(image, scale)
+
 
         
         
@@ -80,6 +95,20 @@ class Asteroid(arcade.Sprite):
         self.center_x += self.delta_x
         self.center_y += self.delta_y
 
+    def shot(self):
+        if self.type == 'brown':
+            pass
+            #delete asteroid
+        elif self.type == 'coin':
+            pass
+            #drop coins
+        elif self.type == 'fuel':
+            pass
+            #drop fuel
+
+class Coin = (arcade.Sprite):
+    def __init__(self, center_x, center_y, scale):
+        self.image = 'sprites/coin/coin.png'
 
 class Game(arcade.Window):
     def __init__(self, width, height, title):
@@ -111,7 +140,7 @@ class Game(arcade.Window):
 
         self.asteroid_list = arcade.SpriteList(use_spatial_hash=USE_SPATIAL_HASHING)
 
-        self.base = arcade.create_rectangle_filled(0, 0, 100, 100, arcade.color.PINK_LAVENDER)
+        self.base = arcade.Sprite('sprites/planets/earth.png', 1, center_x = 0, center_y = 0)
 
         for i in range(0):
             asteroid_x = random.randint(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2)
@@ -120,11 +149,19 @@ class Game(arcade.Window):
             asteroid = Asteroid(asteroid_x , asteroid_y)
             self.asteroid_list.append(asteroid)
 
+        self.oldtime = datetime.now()
+
+
+
 
 
 
     def on_draw(self):
         
+        time = datetime.now()
+        frametime = time - self.oldtime
+        frametime = frametime.microseconds/(10**6)
+        print(frametime **-1)
 
         arcade.start_render()
         self.base.draw()
@@ -132,6 +169,8 @@ class Game(arcade.Window):
         self.rocket.draw()
 
         self.asteroid_list.draw()
+
+        self.oldtime = time
 
         
 
@@ -149,8 +188,7 @@ class Game(arcade.Window):
         asteroid_hit_list = arcade.check_for_collision_with_list(self.rocket, self.asteroid_list)
 
         if asteroid_hit_list:
-            self.rocket.center_x = 0
-            self.rocket.center_y = 0
+            self.rocket.die()
 
         base_hit_list = arcade.check_for_collision_with_list(self.base, self.asteroid_list)
 
