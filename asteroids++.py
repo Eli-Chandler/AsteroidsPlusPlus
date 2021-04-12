@@ -1,4 +1,7 @@
 import arcade
+import arcade.gui
+from arcade.gui import UIManager
+
 import random
 import math
 from datetime import datetime
@@ -17,6 +20,9 @@ USE_SPATIAL_HASHING = False
 class Rocket(arcade.Sprite):
     def __init__(self, image):
         super().__init__(image)
+
+        self.invincible = True
+        self.at_base = False
 
         self.center_x = 0
         self.center_y = 0
@@ -139,8 +145,18 @@ class Game(arcade.Window):
         self.existing_chunks = None
 
         self.BASE_ASTEROID_COUNT = None
+
+        self.score = None
+
+        self.ui_manager = UIManager()
+    
     def setup(self):
         
+        self.show_ui()
+        
+
+        self.score = 0
+
         self.BASE_ASTEROID_COUNT = 100
 
         
@@ -172,6 +188,10 @@ class Game(arcade.Window):
 
         self.asteroid_list.draw()
 
+        arcade.draw_text(f'COINS: {self.rocket.coins}', self.rocket.center_x + SCREEN_WIDTH/2-100, self.rocket.center_y + SCREEN_HEIGHT/2-100, arcade.color.WHITE)
+
+
+
     def on_update(self, delta_time):
         
         self.coin_list.update()
@@ -185,12 +205,20 @@ class Game(arcade.Window):
         asteroid_hit_list = arcade.check_for_collision_with_list(self.rocket, self.asteroid_list)
 
         if asteroid_hit_list:
-            self.rocket.die()
+            if not self.rocket.invincible:
+                self.rocket.die()
 
         base_hit_list = arcade.check_for_collision_with_list(self.base, self.asteroid_list)
 
         for asteroid in base_hit_list:
             asteroid.kill()
+
+        at_base_check = arcade.check_for_collision(self.rocket, self.base)
+
+        if at_base_check:
+            self.rocket.at_base = True
+        else:
+            self.rocket.at_base = False
 
 
         coin_hit_list = arcade.check_for_collision_with_list(self.rocket, self.coin_list)
@@ -263,15 +291,13 @@ class Game(arcade.Window):
 
         nearby_chunks = []
 
-        for i in range(-1, 1):
-            for j in range(-1, 1):
+        for i in range(-1, 2):
+            for j in range(-1, 2):
                 nearby_chunks.append((chunk_x+i, chunk_y + j))
-        
         for chunk in nearby_chunks:
             if chunk not in self.existing_chunks:
                 self.existing_chunks.append(chunk)
-
-                for i in range (random.randint(0, self.MAX_COINS)):
+                for i in range (random.randint(0, self.MAX_COINS + int((chunk[0]**2 + chunk[1]**2)**0.5 /3))):
                     coin_x = random.randint(chunk[0] * 1000, chunk[0] * 1000 + 1000)
                     coin_y = random.randint(chunk[1] * 1000, chunk[1] * 1000 + 1000)
                     self.coin_list.append(Coin(coin_x, coin_y, 0.05))
