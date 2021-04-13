@@ -158,7 +158,6 @@ class Game(arcade.Window):
         self.score = 0
 
         self.BASE_ASTEROID_COUNT = 100
-
         
 
         self.existing_chunks = []
