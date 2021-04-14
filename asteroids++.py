@@ -21,7 +21,7 @@ class Rocket(arcade.Sprite):
     def __init__(self, image):
         super().__init__(image)
 
-        self.invincible = True
+        self.invincible = False
         self.at_base = False
 
         self.center_x = 0
@@ -33,7 +33,7 @@ class Rocket(arcade.Sprite):
         self.thrusters = 100
         self.thrusting = False
 
-        self.dampers = 100
+        self.dampers = 0
         self.damping = False
 
         self.velocity_radians = 0
@@ -45,8 +45,16 @@ class Rocket(arcade.Sprite):
         self.update_angle()
 
         self.velocity_radians = math.atan2(self.delta_y, self.delta_x) - 1.5708
-
-        if self.thrusting:
+        if self.damping:
+            if self.delta_x > 0:
+                self.delta_x += (self.delta_x * math.sin(self.velocity_radians)*delta_time) * self.dampers
+            else:
+                self.delta_x -= (self.delta_x * math.sin(self.velocity_radians)*delta_time) *self.dampers
+            if self.delta_y > 0:
+                self.delta_y -= (self.delta_y * math.cos(self.velocity_radians)*delta_time) * self.dampers
+            else:
+                self.delta_y += (self.delta_y * math.cos(self.velocity_radians)*delta_time) *self.dampers
+        elif self.thrusting:
             self.delta_x += -self.thrusters * math.sin(self.radians)*delta_time
             self.delta_y += self.thrusters * math.cos(self.radians)*delta_time
 
@@ -152,9 +160,6 @@ class Game(arcade.Window):
     
     def setup(self):
         
-        self.show_ui()
-        
-
         self.score = 0
 
         self.BASE_ASTEROID_COUNT = 100
@@ -296,7 +301,10 @@ class Game(arcade.Window):
         for chunk in nearby_chunks:
             if chunk not in self.existing_chunks:
                 self.existing_chunks.append(chunk)
-                for i in range (random.randint(0, self.MAX_COINS + int((chunk[0]**2 + chunk[1]**2)**0.5 /3))):
+                number_of_coins = self.MAX_COINS + int((chunk[0]**2 + chunk[1]**2)**0.5 /3)
+                number_of_coins = random.randint(0, number_of_coins)
+                print(number_of_coins)
+                for i in range (0, number_of_coins):
                     coin_x = random.randint(chunk[0] * 1000, chunk[0] * 1000 + 1000)
                     coin_y = random.randint(chunk[1] * 1000, chunk[1] * 1000 + 1000)
                     self.coin_list.append(Coin(coin_x, coin_y, 0.05))
