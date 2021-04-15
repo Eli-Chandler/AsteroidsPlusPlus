@@ -43,7 +43,12 @@ class Rocket(arcade.Sprite):
 
         self.coins = 0
 
+        self.last_shot = 3
+        self.shoot_speed = 3
     def update(self, delta_time):
+
+        self.last_shot += 1 * delta_time
+
         if self.at_base:
             self.fuel = self.max_fuel
 
@@ -83,12 +88,48 @@ class Rocket(arcade.Sprite):
 
         self.coins = 0
 
+    def shoot(self, bullet_list):
+        print(self.last_shot)
+        if self.last_shot < self.shoot_speed:
+            return
+
+        delta_x = self.delta_x -100 * math.sin(self.radians)
+        delta_y = self.delta_y + 100 * math.cos(self.radians)
+        bullet_list.append(Bullet(self.center_x, self.center_y, delta_x, delta_y, self.angle, 2))
+        self.last_shot = 0
+        
+
 
 ASTEROID_MIN_SIZE = 0.05
 ASTEROID_MAX_SIZE = 0.4
 
 ASTEROID_MAX_VELOCITY = 0.1
 ASTEROID_MAX_ROTATION_SPEED = 1
+
+class Bullet(arcade.Sprite):
+    def __init__(self, center_x, center_y, delta_x, delta_y, angle, max_age):
+        image = 'sprites/explosion/explosion.png'
+        scale = 1
+        super().__init__(image, scale)
+
+        self.center_x = center_x
+        self.center_y = center_y
+        
+        self.delta_x = delta_x
+        self.delta_y = delta_y
+
+        self.angle = angle
+
+        self.age = 0
+        self.max_age = max_age
+
+    def update(self, delta_time):
+        self.center_x += self.delta_x*delta_time
+        self.center_y += self.delta_y*delta_time
+
+        self.age += 1 * delta_time
+        if self.age >= self.max_age:
+            self.kill()
 
 
 class Asteroid(arcade.Sprite):
@@ -142,6 +183,8 @@ class Game(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
 
+        self.bullet_list = None
+
         arcade.set_background_color(arcade.color.BLACK)
 
         self.asteroids_list = None
@@ -168,6 +211,8 @@ class Game(arcade.Window):
     
     def setup(self):
         
+        self.bullet_list = arcade.SpriteList()
+
         self.score = 0
 
         self.BASE_ASTEROID_COUNT = 100
@@ -187,9 +232,12 @@ class Game(arcade.Window):
         self.base = arcade.Sprite('sprites/planets/earth.png', 1, center_x=0, center_y=0)
 
     def on_draw(self):
+        
+
 
         arcade.start_render()
 
+        self.bullet_list.draw()
 
         arcade.draw_line(self.rocket.center_x-50, self.rocket.center_y-50, self.base.center_x, self.base.center_y, arcade.color.PURPLE)
 
@@ -211,6 +259,9 @@ class Game(arcade.Window):
 
     def on_update(self, delta_time):
         
+        for bullet in self.bullet_list:
+            bullet.update(delta_time)
+
         self.coin_list.update()
         self.populate_coins()
 
@@ -254,6 +305,10 @@ class Game(arcade.Window):
             self.rocket.thrusting = True
         if button == arcade.MOUSE_BUTTON_RIGHT:
             self.rocket.damping = True
+
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.SPACE:
+            self.rocket.shoot(self.bullet_list)
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
