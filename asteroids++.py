@@ -36,11 +36,17 @@ class Rocket(arcade.Sprite):
         self.dampers = 0
         self.damping = False
 
+        self.max_fuel = 10
+        self.fuel = 10
+
         self.velocity_radians = 0
 
         self.coins = 0
 
     def update(self, delta_time):
+        if self.at_base:
+            self.fuel = self.max_fuel
+
 
         self.update_angle()
 
@@ -54,7 +60,9 @@ class Rocket(arcade.Sprite):
                 self.delta_y -= (self.delta_y * math.cos(self.velocity_radians)*delta_time) * self.dampers
             else:
                 self.delta_y += (self.delta_y * math.cos(self.velocity_radians)*delta_time) *self.dampers
-        elif self.thrusting:
+        elif self.thrusting and self.fuel > 0:
+            self.fuel -= 1 * delta_time
+            print(self.fuel)
             self.delta_x += -self.thrusters * math.sin(self.radians)*delta_time
             self.delta_y += self.thrusters * math.cos(self.radians)*delta_time
 
@@ -182,7 +190,8 @@ class Game(arcade.Window):
 
         arcade.start_render()
 
-        #arcade.draw_line(self.rocket.center_x-50, self.rocket.center_y-50, self.base.center_x, self.base.center_y, arcade.color.PURPLE)
+
+        arcade.draw_line(self.rocket.center_x-50, self.rocket.center_y-50, self.base.center_x, self.base.center_y, arcade.color.PURPLE)
 
         self.coin_list.draw()
         self.base.draw()
@@ -194,7 +203,11 @@ class Game(arcade.Window):
 
         arcade.draw_text(f'COINS: {self.rocket.coins}', self.rocket.center_x + SCREEN_WIDTH/2-100, self.rocket.center_y + SCREEN_HEIGHT/2-100, arcade.color.WHITE)
 
+        arcade.draw_rectangle_filled(self.rocket.center_x, self.rocket.center_y - SCREEN_HEIGHT/2, SCREEN_WIDTH, 20, arcade.color.GRAY)
 
+
+
+        arcade.draw_rectangle_filled(self.rocket.center_x - SCREEN_WIDTH + self.rocket.fuel * (SCREEN_WIDTH/self.rocket.max_fuel), self.rocket.center_y - SCREEN_HEIGHT/2, SCREEN_WIDTH, 20, arcade.color.GREEN)
 
     def on_update(self, delta_time):
         
@@ -302,7 +315,7 @@ class Game(arcade.Window):
             if chunk not in self.existing_chunks:
                 self.existing_chunks.append(chunk)
                 number_of_coins = self.MAX_COINS + int((chunk[0]**2 + chunk[1]**2)**0.5 /3)
-                number_of_coins = random.randint(0, number_of_coins)
+                number_of_coins = random.randint(1, number_of_coins)
                 print(number_of_coins)
                 for i in range (0, number_of_coins):
                     coin_x = random.randint(chunk[0] * 1000, chunk[0] * 1000 + 1000)
