@@ -108,8 +108,8 @@ ASTEROID_MAX_ROTATION_SPEED = 1
 
 class Bullet(arcade.Sprite):
     def __init__(self, center_x, center_y, delta_x, delta_y, angle, max_age):
-        image = 'sprites/explosion/explosion.png'
-        scale = 1
+        image = 'sprites/bomb.png'
+        scale = 0.8
         super().__init__(image, scale)
 
         self.center_x = center_x
@@ -169,6 +169,34 @@ class Asteroid(arcade.Sprite):
             pass
             # drop fuel
 
+EXPLOSION_MAX_AGE = 0.5
+class Explosion(arcade.Sprite):
+    def __init__(self, obj, EXPLOSION_MAX_AGE = EXPLOSION_MAX_AGE):
+        image = 'sprites/explosion.png'
+        scale = obj.scale
+        super().__init__(image, scale)
+
+        self.center_x = obj.center_x
+        self.center_y = obj.center_y
+        try:
+            self.delta_x = obj.delta_x
+        except: pass
+        try:
+            self.delta_y = obj.delta_y
+        except: pass
+
+        self.angle = obj.angle
+
+        self.age = 0
+        self.max_age = EXPLOSION_MAX_AGE
+    def update(self, delta_time):
+        self.center_x += self.delta_x*delta_time
+        self.center_y += self.delta_y*delta_time
+
+        self.age += 1 * delta_time
+        if self.age >= self.max_age:
+            self.kill()
+
 
 class Coin(arcade.Sprite):
     def __init__(self, center_x, center_y, scale):
@@ -195,6 +223,8 @@ class Game(arcade.Window):
 
         self.asteroid_list = None
 
+        self.explosion_list = None
+
         self.dead = None
 
         self.base = None
@@ -210,6 +240,8 @@ class Game(arcade.Window):
         self.ui_manager = UIManager()
     
     def setup(self):
+
+        self.explosion_list = arcade.SpriteList()
         
         self.bullet_list = arcade.SpriteList()
 
@@ -257,8 +289,13 @@ class Game(arcade.Window):
 
         arcade.draw_rectangle_filled(self.rocket.center_x - SCREEN_WIDTH + self.rocket.fuel * (SCREEN_WIDTH/self.rocket.max_fuel), self.rocket.center_y - SCREEN_HEIGHT/2, SCREEN_WIDTH, 20, arcade.color.GREEN)
 
+        self.explosion_list.draw()
+
     def on_update(self, delta_time):
         
+        for explosion in self.explosion_list:
+            explosion.update(delta_time)
+
         for bullet in self.bullet_list:
             bullet.update(delta_time)
 
@@ -294,6 +331,15 @@ class Game(arcade.Window):
         for coin in coin_hit_list:
             coin.kill()
             self.rocket.coins += 1
+
+        for bullet in self.bullet_list:
+            bullet_hit_list = arcade.check_for_collision_with_list(bullet, self.asteroid_list)
+            if bullet_hit_list:
+                bullet.kill()
+                for asteroid in bullet_hit_list:
+                    self.explosion_list.append(Explosion(asteroid))
+                    asteroid.kill()
+
 
         self.populate_asteroids()
 
