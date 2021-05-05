@@ -67,7 +67,6 @@ class Rocket(arcade.Sprite):
                 self.delta_y += (self.delta_y * math.cos(self.velocity_radians)*delta_time) *self.dampers
         elif self.thrusting and self.fuel > 0:
             self.fuel -= 1 * delta_time
-            print(self.fuel)
             self.delta_x += -self.thrusters * math.sin(self.radians)*delta_time
             self.delta_y += self.thrusters * math.cos(self.radians)*delta_time
 
@@ -128,8 +127,6 @@ class Bullet(arcade.Sprite):
         self.center_y += self.delta_y*delta_time
 
         self.age += 1 * delta_time
-        if self.age >= self.max_age:
-            self.kill()
 
 
 class Asteroid(arcade.Sprite):
@@ -187,15 +184,41 @@ class Explosion(arcade.Sprite):
 
         self.angle = obj.angle
 
+
+        self.current_texture = 0
+
+        self.texture_list = [
+            'explosion0.png',
+            'explosion2.png',
+            'explosion3.png',
+            'explosion4.png',
+            'explosion5.png',
+            'explosion6.png',
+        ]
+        print(f'sprites/explosion/{self.texture_list[0]}')
+        self.texture = arcade.sprite.load_texture(f'sprites/explosion/{self.texture_list[0]}')
+
         self.age = 0
         self.max_age = EXPLOSION_MAX_AGE
+
+        self.anim_frame_time = self.max_age/len(self.texture_list)
+        self.current_frame_time = self.anim_frame_time
     def update(self, delta_time):
         self.center_x += self.delta_x*delta_time
         self.center_y += self.delta_y*delta_time
 
         self.age += 1 * delta_time
-        if self.age >= self.max_age:
-            self.kill()
+
+        if self.age >= self.current_frame_time:
+            try:
+                self.texture = arcade.sprite.load_texture(f'sprites/explosion/{self.texture_list[self.current_texture]}')
+            except:
+                self.kill()
+            self.current_texture += 1
+            self.current_frame_time += self.anim_frame_time
+        
+
+
 
 
 class Coin(arcade.Sprite):
@@ -242,6 +265,7 @@ class Game(arcade.Window):
     def setup(self):
 
         self.explosion_list = arcade.SpriteList()
+
         
         self.bullet_list = arcade.SpriteList()
 
@@ -293,11 +317,16 @@ class Game(arcade.Window):
 
     def on_update(self, delta_time):
         
+        self.explosion_list.update_animation()
+
         for explosion in self.explosion_list:
             explosion.update(delta_time)
 
         for bullet in self.bullet_list:
             bullet.update(delta_time)
+            if bullet.age >= bullet.max_age:
+                self.explosion_list.append(Explosion(bullet))
+                bullet.kill()
 
         self.coin_list.update()
         self.populate_coins()
