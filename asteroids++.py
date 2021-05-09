@@ -33,6 +33,8 @@ class Rocket(arcade.Sprite):
         self.thrusters = 100
         self.thrusting = False
 
+        self.recoil = 10
+
         self.dampers = 0
         self.damping = False
 
@@ -88,10 +90,16 @@ class Rocket(arcade.Sprite):
         self.coins = 0
 
     def shoot(self, bullet_list):
+
+
+
         print(self.last_shot)
         if self.last_shot < self.shoot_speed:
             return
 
+        self.delta_x -= -self.recoil * math.sin(self.radians)
+        self.delta_y -= self.recoil * math.cos(self.radians)
+        
         delta_x = self.delta_x -100 * math.sin(self.radians)
         delta_y = self.delta_y + 100 * math.cos(self.radians)
         bullet_list.append(Bullet(self.center_x, self.center_y, delta_x, delta_y, self.angle, 2))
@@ -108,7 +116,7 @@ ASTEROID_MAX_ROTATION_SPEED = 1
 class Bullet(arcade.Sprite):
     def __init__(self, center_x, center_y, delta_x, delta_y, angle, max_age):
         image = 'sprites/bomb.png'
-        scale = 0.8
+        scale = 0.3
         super().__init__(image, scale)
 
         self.center_x = center_x
@@ -131,7 +139,7 @@ class Bullet(arcade.Sprite):
 
 class Asteroid(arcade.Sprite):
     def __init__(self, center_x, center_y, type='brown'):
-        self.type = 'brown'
+        self.type = type
         image = f'sprites/asteroids/{self.type}_asteroid.png'
         scale = 1
         super().__init__(image, scale)
@@ -367,6 +375,10 @@ class Game(arcade.Window):
                 bullet.kill()
                 for asteroid in bullet_hit_list:
                     self.explosion_list.append(Explosion(asteroid))
+                    if asteroid.type == 'coin':
+                        self.rocket.coins += 5
+                    elif asteroid.type == 'fuel':
+                        self.rocket.fuel = self.rocket.max_fuel
                     asteroid.kill()
 
 
@@ -430,7 +442,14 @@ class Game(arcade.Window):
                 if center_x > left-20 and center_x < right+20 and center_y > bottom-20 and center_y < top+20:
                     continue
                 break
-            self.asteroid_list.append(Asteroid(center_x, center_y))
+            if random.random() <= 0.95:
+                type = 'brown' #95% chance of default asteroid
+            elif random.random() <= 0.5:
+                type = 'coin' #2.5% chance of coin asteroid
+            else:
+                type = 'fuel' #2.5% chance of fuel
+            print(type)
+            self.asteroid_list.append(Asteroid(center_x, center_y, type = type))
 
     def populate_coins(self):
         chunk_x = round(self.rocket.center_x/1000)
