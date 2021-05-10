@@ -269,9 +269,11 @@ class Game(arcade.Window):
         self.score = None
 
         self.ui_manager = UIManager()
+
+        self.level = None
     
     def setup(self):
-
+        self.level = 1
         self.explosion_list = arcade.SpriteList()
 
         
@@ -313,7 +315,7 @@ class Game(arcade.Window):
 
         self.asteroid_list.draw()
 
-        arcade.draw_text(f'COINS: {self.rocket.coins}', self.rocket.center_x + SCREEN_WIDTH/2-100, self.rocket.center_y + SCREEN_HEIGHT/2-100, arcade.color.WHITE)
+        arcade.draw_text(f'COINS: {self.rocket.coins}/{self.level*5}', self.rocket.center_x + SCREEN_WIDTH/2-100, self.rocket.center_y + SCREEN_HEIGHT/2-100, arcade.color.WHITE)
 
         arcade.draw_rectangle_filled(self.rocket.center_x, self.rocket.center_y - SCREEN_HEIGHT/2, SCREEN_WIDTH, 20, arcade.color.GRAY)
 
@@ -358,7 +360,11 @@ class Game(arcade.Window):
         at_base_check = arcade.check_for_collision(self.rocket, self.base)
 
         if at_base_check:
+            if self.rocket.coins >= self.level*5:
+                self.level+=1
+                self.rocket.coins = 0
             self.rocket.at_base = True
+
         else:
             self.rocket.at_base = False
 
@@ -367,7 +373,7 @@ class Game(arcade.Window):
 
         for coin in coin_hit_list:
             coin.kill()
-            self.rocket.coins += 1
+            self.rocket.coins += 5
 
         for bullet in self.bullet_list:
             bullet_hit_list = arcade.check_for_collision_with_list(bullet, self.asteroid_list)
@@ -376,7 +382,7 @@ class Game(arcade.Window):
                 for asteroid in bullet_hit_list:
                     self.explosion_list.append(Explosion(asteroid))
                     if asteroid.type == 'coin':
-                        self.rocket.coins += 5
+                        self.rocket.coins += 1
                     elif asteroid.type == 'fuel':
                         self.rocket.fuel = self.rocket.max_fuel
                     asteroid.kill()
