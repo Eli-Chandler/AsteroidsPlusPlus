@@ -270,10 +270,12 @@ class Game(arcade.Window):
 
         self.ui_manager = UIManager()
 
-        self.level = None
+        self.score = None
     
     def setup(self):
-        self.level = 1
+        
+        self.time = 120
+
         self.explosion_list = arcade.SpriteList()
 
         
@@ -314,8 +316,8 @@ class Game(arcade.Window):
         self.rocket.draw()
 
         self.asteroid_list.draw()
-
-        arcade.draw_text(f'COINS: {self.rocket.coins}/{self.level*5}', self.rocket.center_x + SCREEN_WIDTH/2-100, self.rocket.center_y + SCREEN_HEIGHT/2-100, arcade.color.WHITE)
+        arcade.draw_text(f'{int(self.time)}', self.rocket.center_x + SCREEN_WIDTH/2-100, self.rocket.center_y + SCREEN_HEIGHT/2-200, arcade.color.WHITE)
+        arcade.draw_text(f'COINS: {self.rocket.coins} SCORE: {self.score}', self.rocket.center_x + SCREEN_WIDTH/2-140, self.rocket.center_y + SCREEN_HEIGHT/2-100, arcade.color.WHITE)
 
         arcade.draw_rectangle_filled(self.rocket.center_x, self.rocket.center_y - SCREEN_HEIGHT/2, SCREEN_WIDTH, 20, arcade.color.GRAY)
 
@@ -327,6 +329,12 @@ class Game(arcade.Window):
 
     def on_update(self, delta_time):
         
+        self.time -= delta_time
+        if self.time <= 0:
+            print(self.score)
+            self.setup()
+            
+
         self.explosion_list.update_animation()
 
         for explosion in self.explosion_list:
@@ -350,6 +358,8 @@ class Game(arcade.Window):
 
         if asteroid_hit_list:
             if not self.rocket.invincible:
+                print(self.score)
+                self.setup()
                 self.rocket.die()
 
         base_hit_list = arcade.check_for_collision_with_list(self.base, self.asteroid_list)
@@ -360,9 +370,8 @@ class Game(arcade.Window):
         at_base_check = arcade.check_for_collision(self.rocket, self.base)
 
         if at_base_check:
-            if self.rocket.coins >= self.level*5:
-                self.level+=1
-                self.rocket.coins = 0
+            self.score += self.rocket.coins
+            self.rocket.coins = 0
             self.rocket.at_base = True
 
         else:
@@ -454,7 +463,6 @@ class Game(arcade.Window):
                 type = 'coin' #2.5% chance of coin asteroid
             else:
                 type = 'fuel' #2.5% chance of fuel
-            print(type)
             self.asteroid_list.append(Asteroid(center_x, center_y, type = type))
 
     def populate_coins(self):
@@ -471,7 +479,6 @@ class Game(arcade.Window):
                 self.existing_chunks.append(chunk)
                 number_of_coins = self.MAX_COINS + int((chunk[0]**2 + chunk[1]**2)**0.5 /3)
                 number_of_coins = random.randint(1, number_of_coins)
-                print(number_of_coins)
                 for i in range (0, number_of_coins):
                     coin_x = random.randint(chunk[0] * 1000, chunk[0] * 1000 + 1000)
                     coin_y = random.randint(chunk[1] * 1000, chunk[1] * 1000 + 1000)
