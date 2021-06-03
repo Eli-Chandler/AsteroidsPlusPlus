@@ -8,6 +8,8 @@ from datetime import datetime
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
+current_screen_height = SCREEN_HEIGHT
+current_screen_width = SCREEN_WIDTH
 
 MOUSE_X = 0
 MOUSE_Y = 0
@@ -76,8 +78,8 @@ class Rocket(arcade.Sprite):
         self.center_y += self.delta_y*delta_time
 
     def update_angle(self):
-        mouse_x_relative = MOUSE_X - SCREEN_WIDTH/2
-        mouse_y_relative = MOUSE_Y - SCREEN_HEIGHT/2
+        mouse_x_relative = MOUSE_X - current_screen_width/2
+        mouse_y_relative = MOUSE_Y - current_screen_height/2
         self.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708
 
     def die(self):
@@ -177,9 +179,9 @@ class Asteroid(arcade.Sprite):
 EXPLOSION_MAX_AGE = 0.5
 class Explosion(arcade.Sprite):
     def __init__(self, obj, EXPLOSION_MAX_AGE = EXPLOSION_MAX_AGE):
-        image = 'sprites/explosion.png'
         scale = obj.scale
-        super().__init__(image, scale)
+        image = 'sprites/explosion/explosion0.png'
+        super().__init__(image,scale)
 
         self.center_x = obj.center_x
         self.center_y = obj.center_y
@@ -411,6 +413,14 @@ class Game(arcade.Window):
     def on_key_press(self, key, modifiers):
         if key == arcade.key.SPACE:
             self.rocket.shoot(self.bullet_list)
+        if key == arcade.key.F:
+            global current_screen_width, current_screen_height
+            
+            # User hits f. Flip between full and not full screen.
+            self.set_fullscreen(not self.fullscreen)
+            
+            
+            current_screen_width, current_screen_height = self.get_size()
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
