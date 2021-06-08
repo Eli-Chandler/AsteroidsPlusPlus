@@ -27,3 +27,8 @@ Tracter beam - used to collect coins
 Fuel upgrade - More fuel
 
 Asteroid miner - green asteroids can be used to mine fuel from
+
+
+Make it so the timer is your 'oxygen' you can use your coins to buy more upgrades at the base such as more oxygen, and your oxygen is restored when going back to base, instead
+of instantly dying on contact with an asteroid you could lose all of your fuel which would cost you time to back to base. There could be satellites farther out that you could buy
+the location of and they would provide better upgrades, end game could be getting to the moon or mars.

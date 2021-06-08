@@ -396,6 +396,8 @@ class Game(arcade.Window):
                         self.rocket.coins += 1
                     elif asteroid.type == 'fuel':
                         self.rocket.fuel = self.rocket.max_fuel
+                    elif asteroid.type == 'time':
+                        self.time += 5
                     asteroid.kill()
 
 
@@ -467,12 +469,15 @@ class Game(arcade.Window):
                 if center_x > left-20 and center_x < right+20 and center_y > bottom-20 and center_y < top+20:
                     continue
                 break
-            if random.random() <= 0.95:
+            num = random.random()
+            if num <= 0.95:
                 type = 'brown' #95% chance of default asteroid
-            elif random.random() <= 0.5:
-                type = 'coin' #2.5% chance of coin asteroid
+            elif num <= 0.97:
+                type = 'coin' 
+            elif num <= 0.99:
+                type = 'fuel' 
             else:
-                type = 'fuel' #2.5% chance of fuel
+                type = 'time'
             self.asteroid_list.append(Asteroid(center_x, center_y, type = type))
 
     def populate_coins(self):
