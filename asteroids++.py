@@ -240,9 +240,9 @@ class Coin(arcade.Sprite):
         self.center_y = center_y
 
 
-class Game(arcade.Window):
-    def __init__(self, width, height, title):
-        super().__init__(width, height, title)
+class GameView(arcade.View):
+    def __init__(self):
+        super().__init__()
 
         self.bullet_list = None
 
@@ -415,14 +415,6 @@ class Game(arcade.Window):
     def on_key_press(self, key, modifiers):
         if key == arcade.key.SPACE:
             self.rocket.shoot(self.bullet_list)
-        if key == arcade.key.F:
-            global current_screen_width, current_screen_height
-            
-            # User hits f. Flip between full and not full screen.
-            self.set_fullscreen(not self.fullscreen)
-            
-            
-            current_screen_width, current_screen_height = self.get_size()
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -507,7 +499,22 @@ class Game(arcade.Window):
         MOUSE_X = x
         MOUSE_Y = y
 
+class MyGame(arcade.Window):
+    def __init__(self, width, height, title):
+        super().__init__(width, height, title)
 
-window = Game(SCREEN_WIDTH, SCREEN_HEIGHT, 'Asteroids++')
-window.setup()
-arcade.run()
+    def on_key_press(self, key, modifiers):
+        if key == arcade.key.F:
+            global current_screen_width, current_screen_height
+            
+            # User hits f. Flip between full and not full screen.
+            self.set_fullscreen(not self.fullscreen)
+
+            current_screen_width, current_screen_height = self.get_size()
+
+if __name__ == '__main__':
+    window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, 'Asteroids++')
+    start_view = GameView()
+    window.show_view(start_view)
+    start_view.setup()
+    arcade.run()
