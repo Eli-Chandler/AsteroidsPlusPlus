@@ -6,7 +6,7 @@ import random
 import math
 from datetime import datetime
 
-import buttons
+import sprites
 
 
 SCREEN_WIDTH = 1280
@@ -21,233 +21,9 @@ MOUSE_Y = 0
 
 USE_SPATIAL_HASHING = False
 
-
-class Rocket(arcade.Sprite):
-    def __init__(self, image):
-        super().__init__(image)
-
-        self.invincible = False
-        self.at_base = False
-
-        self.center_x = 0
-        self.center_y = 0
-
-        self.delta_x = 0
-        self.delta_y = 0
-
-        self.thrusters = 100
-        self.thrusting = False
-
-        self.recoil = 10
-
-        self.dampers = 0
-        self.damping = False
-
-        self.max_fuel = 10
-        self.fuel = 10
-
-        self.velocity_radians = 0
-
-        self.coins = 0
-
-        self.last_shot = 3
-        self.shoot_speed = 3
-    def update(self, delta_time):
-
-        self.last_shot += 1 * delta_time
-
-        if self.at_base:
-            self.fuel = self.max_fuel
-
-
-        self.update_angle()
-
-        self.velocity_radians = math.atan2(self.delta_y, self.delta_x) - 1.5708
-        if self.damping:
-            if self.delta_x > 0:
-                self.delta_x += (self.delta_x * math.sin(self.velocity_radians)*delta_time) * self.dampers
-            else:
-                self.delta_x -= (self.delta_x * math.sin(self.velocity_radians)*delta_time) *self.dampers
-            if self.delta_y > 0:
-                self.delta_y -= (self.delta_y * math.cos(self.velocity_radians)*delta_time) * self.dampers
-            else:
-                self.delta_y += (self.delta_y * math.cos(self.velocity_radians)*delta_time) *self.dampers
-        elif self.thrusting and self.fuel > 0:
-            self.fuel -= 1 * delta_time
-            self.delta_x += -self.thrusters * math.sin(self.radians)*delta_time
-            self.delta_y += self.thrusters * math.cos(self.radians)*delta_time
-
-        self.center_x += self.delta_x*delta_time
-        self.center_y += self.delta_y*delta_time
-
-    def update_angle(self):
-        mouse_x_relative = MOUSE_X - current_screen_width/2
-        mouse_y_relative = MOUSE_Y - current_screen_height/2
-        self.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708
-
-    def die(self):
-        self.center_x = 0
-        self.center_y = 0
-
-        self.delta_x = 0
-        self.delta_y = 0
-
-        self.coins = 0
-
-    def shoot(self, bullet_list):
-
-
-
-        print(self.last_shot)
-        if self.last_shot < self.shoot_speed:
-            return
-
-        self.delta_x -= -self.recoil * math.sin(self.radians)
-        self.delta_y -= self.recoil * math.cos(self.radians)
-        
-        delta_x = self.delta_x -100 * math.sin(self.radians)
-        delta_y = self.delta_y + 100 * math.cos(self.radians)
-        bullet_list.append(Bullet(self.center_x, self.center_y, delta_x, delta_y, self.angle, 2))
-        self.last_shot = 0
-        
-
-
-ASTEROID_MIN_SIZE = 0.05
-ASTEROID_MAX_SIZE = 0.4
-
-ASTEROID_MAX_VELOCITY = 0.1
-ASTEROID_MAX_ROTATION_SPEED = 1
-
-class Bullet(arcade.Sprite):
-    def __init__(self, center_x, center_y, delta_x, delta_y, angle, max_age):
-        image = 'sprites/bomb.png'
-        scale = 0.3
-        super().__init__(image, scale)
-
-        self.center_x = center_x
-        self.center_y = center_y
-        
-        self.delta_x = delta_x
-        self.delta_y = delta_y
-
-        self.angle = angle
-
-        self.age = 0
-        self.max_age = max_age
-
-    def update(self, delta_time):
-        self.center_x += self.delta_x*delta_time
-        self.center_y += self.delta_y*delta_time
-
-        self.age += 1 * delta_time
-
-
-class Asteroid(arcade.Sprite):
-    def __init__(self, center_x, center_y, type='brown'):
-        self.type = type
-        image = f'sprites/asteroids/{self.type}_asteroid.png'
-        scale = 1
-        super().__init__(image, scale)
-
-        self.center_x = center_x
-        self.center_y = center_y
-
-        self.delta_x = random.uniform(-ASTEROID_MAX_VELOCITY,
-                                      ASTEROID_MAX_VELOCITY)
-        self.delta_y = random.uniform(-ASTEROID_MAX_VELOCITY,
-                                      ASTEROID_MAX_VELOCITY)
-
-        self.rotation_speed = random.uniform(
-            -ASTEROID_MAX_ROTATION_SPEED, ASTEROID_MAX_ROTATION_SPEED)
-
-        self.scale = random.uniform(ASTEROID_MIN_SIZE, ASTEROID_MAX_SIZE)
-        self.angle = random.randint(0, 360)
-
-    def update(self):
-        self.angle += self.rotation_speed
-        self.center_x += self.delta_x
-        self.center_y += self.delta_y
-
-    def shot(self):
-        if self.type == 'brown':
-            pass
-            # delete asteroid
-        elif self.type == 'coin':
-            pass
-            # drop coins
-        elif self.type == 'fuel':
-            pass
-            # drop fuel
-
-EXPLOSION_MAX_AGE = 0.5
-class Explosion(arcade.Sprite):
-    def __init__(self, obj, EXPLOSION_MAX_AGE = EXPLOSION_MAX_AGE):
-        scale = obj.scale
-        image = 'sprites/explosion/explosion0.png'
-        super().__init__(image,scale)
-
-        self.center_x = obj.center_x
-        self.center_y = obj.center_y
-        try:
-            self.delta_x = obj.delta_x
-        except: pass
-        try:
-            self.delta_y = obj.delta_y
-        except: pass
-
-        self.angle = obj.angle
-
-
-        self.current_texture = 0
-
-        self.texture_list = [
-            'explosion0.png',
-            'explosion2.png',
-            'explosion3.png',
-            'explosion4.png',
-            'explosion5.png',
-            'explosion6.png',
-        ]
-        print(f'sprites/explosion/{self.texture_list[0]}')
-        self.texture = arcade.sprite.load_texture(f'sprites/explosion/{self.texture_list[0]}')
-
-        self.age = 0
-        self.max_age = EXPLOSION_MAX_AGE
-
-        self.anim_frame_time = self.max_age/len(self.texture_list)
-        self.current_frame_time = self.anim_frame_time
-    def update(self, delta_time):
-        self.center_x += self.delta_x*delta_time
-        self.center_y += self.delta_y*delta_time
-
-        self.age += 1 * delta_time
-
-        if self.age >= self.current_frame_time:
-            try:
-                self.texture = arcade.sprite.load_texture(f'sprites/explosion/{self.texture_list[self.current_texture]}')
-            except:
-                self.kill()
-            self.current_texture += 1
-            self.current_frame_time += self.anim_frame_time
-        
-
-
-
-
-class Coin(arcade.Sprite):
-    def __init__(self, center_x, center_y, scale):
-        image = 'sprites/coin/coin.png'
-        super().__init__(image, scale)
-
-        self.center_x = center_x
-        self.center_y = center_y
-
-
 class GameView(arcade.View):
     def __init__(self):
         super().__init__()
-
-        self.bullet_list = None
 
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -283,8 +59,7 @@ class GameView(arcade.View):
 
         self.explosion_list = arcade.SpriteList()
 
-        
-        self.bullet_list = arcade.SpriteList()
+
 
         self.score = 0
 
@@ -297,7 +72,7 @@ class GameView(arcade.View):
         self.coin_list = arcade.SpriteList()
 
         self.rocket_list = arcade.SpriteList()
-        self.rocket = Rocket('sprites/rocket/still.png')
+        self.rocket = sprites.Rocket('sprites/rocket/still.png')
         self.rocket_list.append(self.rocket)
 
         self.asteroid_list = arcade.SpriteList(use_spatial_hash=USE_SPATIAL_HASHING)
@@ -310,7 +85,7 @@ class GameView(arcade.View):
 
         arcade.start_render()
 
-        self.bullet_list.draw()
+        self.rocket.bullet_list.draw()
 
         arcade.draw_line(self.rocket.center_x-50, self.rocket.center_y-50, self.base.center_x, self.base.center_y, arcade.color.PURPLE)
 
@@ -345,17 +120,17 @@ class GameView(arcade.View):
         for explosion in self.explosion_list:
             explosion.update(delta_time)
 
-        for bullet in self.bullet_list:
+        for bullet in self.rocket.bullet_list:
             bullet.update(delta_time)
             if bullet.age >= bullet.max_age:
-                self.explosion_list.append(Explosion(bullet))
+                self.explosion_list.append(sprites.Explosion(bullet))
                 bullet.kill()
 
         self.coin_list.update()
         self.populate_coins()
 
 
-        self.rocket.update(delta_time)
+        self.rocket.update(delta_time, MOUSE_X, MOUSE_Y)
 
         self.asteroid_list.update()
 
@@ -389,12 +164,12 @@ class GameView(arcade.View):
             coin.kill()
             self.rocket.coins += 5
 
-        for bullet in self.bullet_list:
+        for bullet in self.rocket.bullet_list:
             bullet_hit_list = arcade.check_for_collision_with_list(bullet, self.asteroid_list)
             if bullet_hit_list:
                 bullet.kill()
                 for asteroid in bullet_hit_list:
-                    self.explosion_list.append(Explosion(asteroid))
+                    self.explosion_list.append(sprites.Explosion(asteroid))
                     if asteroid.type == 'coin':
                         self.rocket.coins += 1
                     elif asteroid.type == 'fuel':
@@ -417,7 +192,7 @@ class GameView(arcade.View):
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.SPACE:
-            self.rocket.shoot(self.bullet_list)
+            self.rocket.shoot()
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -473,7 +248,7 @@ class GameView(arcade.View):
                 type = 'fuel' 
             else:
                 type = 'time'
-            self.asteroid_list.append(Asteroid(center_x, center_y, type = type))
+            self.asteroid_list.append(sprites.Asteroid(center_x, center_y, type = type))
 
     def populate_coins(self):
         chunk_x = round(self.rocket.center_x/1000)
@@ -492,7 +267,7 @@ class GameView(arcade.View):
                 for i in range (0, number_of_coins):
                     coin_x = random.randint(chunk[0] * 1000, chunk[0] * 1000 + 1000)
                     coin_y = random.randint(chunk[1] * 1000, chunk[1] * 1000 + 1000)
-                    self.coin_list.append(Coin(coin_x, coin_y, 0.05))
+                    self.coin_list.append(sprites.Coin(coin_x, coin_y, 0.05))
 
 
 
@@ -551,7 +326,7 @@ class MyGame(arcade.Window):
 
 if __name__ == '__main__':
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, 'Asteroids++')
-    start_view = MenuView()
-    window.show_view(start_view)
-    start_view.setup()
+    game_view = GameView()
+    window.show_view(game_view)
+    game_view.setup()
     arcade.run()
