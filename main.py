@@ -7,7 +7,7 @@ import math
 from datetime import datetime
 
 import sprites
-
+import buttons
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -24,8 +24,6 @@ USE_SPATIAL_HASHING = False
 class GameView(arcade.View):
     def __init__(self):
         super().__init__()
-
-        arcade.set_background_color(arcade.color.BLACK)
 
         self.asteroids_list = None
 
@@ -54,6 +52,8 @@ class GameView(arcade.View):
         self.score = None
     
     def setup(self):
+
+        arcade.set_background_color(arcade.color.BLACK)
         
         self.time = 120
 
@@ -285,9 +285,11 @@ class MenuView(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
+        self.logo.draw()
+        
 
     def on_show_view(self):
-        arcade.set_background_color(arcade.color.GREEN)
+        arcade.set_background_color(arcade.color.BLACK)
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
 
     def on_hide_view(self):
@@ -299,10 +301,13 @@ class MenuView(arcade.View):
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
 
-        button = buttons.StartButton(
-            'FlatButton',
-            center_x = x_slot,
-            center_y = y_slot,
+        self.logo = arcade.Sprite('sprites/menu/logo.png', 1, center_x = x_slot * 2, center_y = y_slot * 3)
+
+        button = buttons.ChangeViewButton(
+            'Play',
+            x_slot,
+            y_slot,
+            game_view,
             width = 250
         )
     
@@ -327,6 +332,7 @@ class MyGame(arcade.Window):
 if __name__ == '__main__':
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, 'Asteroids++')
     game_view = GameView()
-    window.show_view(game_view)
-    game_view.setup()
+    menu_view = MenuView()
+    window.show_view(menu_view)
+    menu_view.setup()
     arcade.run()
