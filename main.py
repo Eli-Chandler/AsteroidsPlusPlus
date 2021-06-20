@@ -310,7 +310,16 @@ class MenuView(arcade.View):
             game_view,
             width = 250
         )
-    
+
+        self.ui_manager.add_ui_element(button)
+
+        button = buttons.FullScreenButton(
+            'Toggle Fullscreen',
+            x_slot *2,
+            y_slot,
+            width = 250
+        )
+
         self.ui_manager.add_ui_element(button)
 
         
@@ -322,12 +331,13 @@ class MyGame(arcade.Window):
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.F:
-            global current_screen_width, current_screen_height
-            
             # User hits f. Flip between full and not full screen.
             self.set_fullscreen(not self.fullscreen)
 
-            current_screen_width, current_screen_height = self.get_size()
+
+    def on_resize(self, width, height):
+        global current_screen_width, current_screen_height
+        current_screen_width, current_screen_height = self.get_size()
 
 if __name__ == '__main__':
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, 'Asteroids++')
