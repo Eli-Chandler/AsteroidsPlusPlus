@@ -11,15 +11,12 @@ class ChangeViewButton(arcade.gui.UIFlatButton):
     def on_click(self):
 
         self.window.show_view(self.view)
-        self.view.setup()
 
 class FullScreenButton(arcade.gui.UIFlatButton):
     def __init__(self, text, center_x, center_y, width = 100, height = 100):
         super().__init__(text, center_x, center_y, width, height)
 
         self.window = arcade.get_window()
-
-        self.window
 
     def on_click(self):
 

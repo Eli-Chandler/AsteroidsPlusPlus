@@ -193,12 +193,18 @@ class GameView(arcade.View):
     def on_key_press(self, key, modifiers):
         if key == arcade.key.SPACE:
             self.rocket.shoot()
+        if key == arcade.key.ESCAPE:
+            window.show_view(MenuView())
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.rocket.thrusting = False
         if button == arcade.MOUSE_BUTTON_RIGHT:
             self.rocket.damping = False
+
+    def on_show_view(self):
+        arcade.set_viewport(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2,
+                            self.rocket.center_y-SCREEN_HEIGHT/2, self.rocket.center_y+SCREEN_HEIGHT/2)
 
     def get_exterior_coords(self):
 
@@ -289,11 +295,13 @@ class MenuView(arcade.View):
         
 
     def on_show_view(self):
+        self.setup()
         arcade.set_background_color(arcade.color.BLACK)
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
 
     def on_hide_view(self):
         self.ui_manager.unregister_handlers()
+
 
     def setup(self):
         self.ui_manager.purge_ui_elements()
@@ -321,7 +329,6 @@ class MenuView(arcade.View):
         )
 
         self.ui_manager.add_ui_element(button)
-
         
 
 
@@ -342,7 +349,6 @@ class MyGame(arcade.Window):
 if __name__ == '__main__':
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, 'Asteroids++')
     game_view = GameView()
-    menu_view = MenuView()
-    window.show_view(menu_view)
-    menu_view.setup()
+    game_view.setup()
+    window.show_view(MenuView())
     arcade.run()
