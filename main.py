@@ -50,6 +50,8 @@ class GameView(arcade.View):
         self.ui_manager = UIManager()
 
         self.score = None
+
+        self.edge_marker = None
     
     def setup(self):
 
@@ -79,17 +81,24 @@ class GameView(arcade.View):
 
         self.base = arcade.Sprite('sprites/planets/earth.png', 1, center_x=0, center_y=0)
 
+        self.edge_marker = sprites.Marker(self.rocket, self.base)
+
     def on_draw(self):
         
 
 
         arcade.start_render()
 
+
+        
         self.rocket.bullet_list.draw()
 
-        arcade.draw_line(self.rocket.center_x-50, self.rocket.center_y-50, self.base.center_x, self.base.center_y, arcade.color.PURPLE)
 
         self.coin_list.draw()
+        
+        if not self.rocket.at_base and self.edge_marker.check_visibility(current_screen_width, current_screen_height):
+            self.edge_marker.draw()
+
         self.base.draw()
 
 
@@ -178,6 +187,7 @@ class GameView(arcade.View):
                         self.time += 5
                     asteroid.kill()
 
+        self.edge_marker.update()
 
         self.populate_asteroids()
 
@@ -345,6 +355,7 @@ class MyGame(arcade.Window):
     def on_resize(self, width, height):
         global current_screen_width, current_screen_height
         current_screen_width, current_screen_height = self.get_size()
+
 
 if __name__ == '__main__':
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, 'Asteroids++')

@@ -92,6 +92,42 @@ class Rocket(arcade.Sprite):
         self.bullet_list.append(Bullet(self.center_x, self.center_y, delta_x, delta_y, self.angle, 2))
         self.last_shot = 0
 
+class Marker(arcade.Sprite):
+    def __init__(self, origin, target):
+        image = 'sprites/edge marker.png'
+        scale = 1
+        super().__init__(image, scale)
+
+        self.center_x = origin.center_x
+        self.center_y = origin.center_y
+
+        self.origin = origin
+        self.target = target
+
+    def update(self):
+
+        
+
+        self.center_x = self.origin.center_x
+        self.center_y = self.origin.center_y
+
+
+
+        relative_x = self.center_x - self.target.center_x
+        relative_y = self.center_y - self.target.center_y
+
+        self.radians = math.atan2(relative_y, relative_x) - 1.5708
+
+    def check_visibility(self, screen_width, screen_height):
+        
+
+        if self.center_x + screen_width/2 < self.target.center_x or self.center_y + screen_height/2 < self.target.center_x:
+            return True
+        if self.center_x - screen_width/2 < self.target.center_x or self.center_y - screen_height/2 < self.target.center_x:
+            
+            return True
+        return False
+
 class Bullet(arcade.Sprite):
     def __init__(self, center_x, center_y, delta_x, delta_y, angle, max_age):
         image = 'sprites/bomb.png'

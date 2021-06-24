@@ -21,5 +21,3 @@ class FullScreenButton(arcade.gui.UIFlatButton):
     def on_click(self):
 
         self.window.set_fullscreen(not self.window.fullscreen)
-
-        current_screen_width, current_screen_height = self.get_size()
