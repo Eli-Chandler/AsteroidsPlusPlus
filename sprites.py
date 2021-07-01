@@ -38,6 +38,9 @@ class Rocket(arcade.Sprite):
         self.bullet_list = arcade.SpriteList()
     def update(self, delta_time, mouse_x, mouse_y):
 
+        self.oxygen -= delta_time
+
+
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
 
@@ -45,6 +48,7 @@ class Rocket(arcade.Sprite):
 
         if self.at_base:
             self.fuel = self.max_fuel
+            self.oxygen = self.max_oxygen
 
         mouse_x_relative = mouse_x - current_screen_width/2
         mouse_y_relative = mouse_y - current_screen_height/2
@@ -270,3 +274,16 @@ class ProgressBar(arcade.Sprite):
 
         self.center_x = center_x -  current_screen_width + (self.scale * 1280 * percentage)
         self.center_y = center_y - current_screen_height / 2 + self.y_height
+
+class Background(arcade.Sprite):
+    def __init__(self, parent):
+        scale = 1
+        image = f'sprites/backgrounds/space background.png'
+        super().__init__(image, scale)
+        
+        self.parent = parent
+
+    def update(self):
+        self.center_x = self.parent.center_x - self.parent.center_x / 10
+        self.center_y = self.parent.center_y - self.parent.center_y / 10
+    

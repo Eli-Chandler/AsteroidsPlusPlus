@@ -56,6 +56,8 @@ class GameView(arcade.View):
         self.fuel_progress_bar = None
 
         self.oxygen_progress_bar = None
+
+        self.background = None
     
     def setup(self):
 
@@ -90,12 +92,16 @@ class GameView(arcade.View):
 
         self.edge_marker = sprites.Marker(self.rocket, self.base)
 
+        self.background = sprites.Background(self.rocket)
+
+
     def on_draw(self):
         
 
 
         arcade.start_render()
 
+        self.background.draw()
 
         
         self.rocket.bullet_list.draw()
@@ -155,8 +161,6 @@ class GameView(arcade.View):
         at_base_check = arcade.check_for_collision(self.rocket, self.base)
 
         if at_base_check:
-            self.score += self.rocket.coins
-            self.rocket.coins = 0
             self.rocket.at_base = True
 
         else:
@@ -192,6 +196,8 @@ class GameView(arcade.View):
 
         self.fuel_progress_bar.update(self.rocket.center_x, self.rocket.center_y, self.rocket.fuel/self.rocket.max_fuel)
         self.oxygen_progress_bar.update(self.rocket.center_x, self.rocket.center_y, self.rocket.oxygen/self.rocket.max_oxygen)
+
+        self.background.update()
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
