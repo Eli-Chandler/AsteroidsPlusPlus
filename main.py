@@ -54,16 +54,18 @@ class GameView(arcade.View):
         self.edge_marker = None
 
         self.fuel_progress_bar = None
+
+        self.oxygen_progress_bar = None
     
     def setup(self):
 
-        self.fuel_progress_bar = sprites.ProgressBar(50, 'green')
+        self.fuel_progress_bar = sprites.ProgressBar(5, 'green')
+
+        self.oxygen_progress_bar = sprites.ProgressBar(15, 'blue')
 
 
         arcade.set_background_color(arcade.color.BLACK)
         
-        self.time = 120
-
         self.explosion_list = arcade.SpriteList()
 
 
@@ -110,22 +112,14 @@ class GameView(arcade.View):
         self.rocket.draw()
 
         self.asteroid_list.draw()
-        arcade.draw_text(f'{int(self.time)}', self.rocket.center_x + SCREEN_WIDTH/2-100, self.rocket.center_y + SCREEN_HEIGHT/2-200, arcade.color.WHITE)
-        arcade.draw_text(f'COINS: {self.rocket.coins} SCORE: {self.score}', self.rocket.center_x + SCREEN_WIDTH/2-140, self.rocket.center_y + SCREEN_HEIGHT/2-100, arcade.color.WHITE)
 
 
         self.explosion_list.draw()
 
         self.fuel_progress_bar.draw()
+        self.oxygen_progress_bar.draw()
 
     def on_update(self, delta_time):
-        
-        self.time -= delta_time
-        if self.time <= 0:
-            self.setup()
-            
-
-
 
         self.explosion_list.update_animation()
 
@@ -186,7 +180,7 @@ class GameView(arcade.View):
                     elif asteroid.type == 'fuel':
                         self.rocket.fuel = self.rocket.max_fuel
                     elif asteroid.type == 'time':
-                        self.time += 5
+                        pass
                     asteroid.kill()
 
         self.edge_marker.update()
@@ -197,6 +191,7 @@ class GameView(arcade.View):
                             self.rocket.center_y-SCREEN_HEIGHT/2, self.rocket.center_y+SCREEN_HEIGHT/2)
 
         self.fuel_progress_bar.update(self.rocket.center_x, self.rocket.center_y, self.rocket.fuel/self.rocket.max_fuel)
+        self.oxygen_progress_bar.update(self.rocket.center_x, self.rocket.center_y, self.rocket.oxygen/self.rocket.max_oxygen)
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -263,11 +258,11 @@ class GameView(arcade.View):
             if num <= 0.95:
                 type = 'brown' #95% chance of default asteroid
             elif num <= 0.97:
-                type = 'coin' 
+                type = 'coin'  # 2%
             elif num <= 0.99:
-                type = 'fuel' 
+                type = 'fuel'  # 2%
             else:
-                type = 'time'
+                type = 'time' # 1%
             self.asteroid_list.append(sprites.Asteroid(center_x, center_y, type = type))
 
     def populate_coins(self):

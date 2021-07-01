@@ -25,6 +25,8 @@ class Rocket(arcade.Sprite):
 
         self.max_fuel = 10
         self.fuel = 10
+        self.max_oxygen = 45
+        self.oxygen = 45
 
         self.velocity_radians = 0
 
@@ -258,6 +260,7 @@ class ProgressBar(arcade.Sprite):
         super().__init__(image, scale)
 
         self.scale = scale
+        self.y_height = height
 
     def update(self, center_x, center_y, percentage):
 
@@ -266,4 +269,4 @@ class ProgressBar(arcade.Sprite):
 
 
         self.center_x = center_x -  current_screen_width + (self.scale * 1280 * percentage)
-        self.center_y = center_y - current_screen_height / 2 + self.height
+        self.center_y = center_y - current_screen_height / 2 + self.y_height
