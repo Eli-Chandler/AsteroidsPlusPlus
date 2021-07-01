@@ -121,12 +121,10 @@ class Marker(arcade.Sprite):
     def check_visibility(self, screen_width, screen_height):
         
 
-        if self.center_x + screen_width/2 < self.target.center_x or self.center_y + screen_height/2 < self.target.center_x:
-            return True
-        if self.center_x - screen_width/2 < self.target.center_x or self.center_y - screen_height/2 < self.target.center_x:
-            
-            return True
-        return False
+        if self.center_x + screen_width/2 > self.target.center_x and self.center_x - screen_width/2 <  self.target.center_x:
+            if self.center_y + screen_height/2 > self.target.center_y and self.center_y - screen_height/2 <  self.target.center_y:
+                return False
+        return True
 
 class Bullet(arcade.Sprite):
     def __init__(self, center_x, center_y, delta_x, delta_y, angle, max_age):
@@ -252,3 +250,20 @@ class Coin(arcade.Sprite):
 
         self.center_x = center_x
         self.center_y = center_y
+
+class ProgressBar(arcade.Sprite):
+    def __init__(self, height, color):
+        scale = 1
+        image = f'sprites/bars/{color}.png'
+        super().__init__(image, scale)
+
+        self.scale = scale
+
+    def update(self, center_x, center_y, percentage):
+
+        current_screen_width = arcade.get_window().width
+        current_screen_height = arcade.get_window().height
+
+
+        self.center_x = center_x -  current_screen_width + (self.scale * 1280 * percentage)
+        self.center_y = center_y - current_screen_height / 2 + self.height

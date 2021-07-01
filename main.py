@@ -52,8 +52,13 @@ class GameView(arcade.View):
         self.score = None
 
         self.edge_marker = None
+
+        self.fuel_progress_bar = None
     
     def setup(self):
+
+        self.fuel_progress_bar = sprites.ProgressBar(50, 'green')
+
 
         arcade.set_background_color(arcade.color.BLACK)
         
@@ -108,21 +113,19 @@ class GameView(arcade.View):
         arcade.draw_text(f'{int(self.time)}', self.rocket.center_x + SCREEN_WIDTH/2-100, self.rocket.center_y + SCREEN_HEIGHT/2-200, arcade.color.WHITE)
         arcade.draw_text(f'COINS: {self.rocket.coins} SCORE: {self.score}', self.rocket.center_x + SCREEN_WIDTH/2-140, self.rocket.center_y + SCREEN_HEIGHT/2-100, arcade.color.WHITE)
 
-        arcade.draw_rectangle_filled(self.rocket.center_x, self.rocket.center_y - SCREEN_HEIGHT/2, SCREEN_WIDTH, 20, arcade.color.GRAY)
-
-
-
-        arcade.draw_rectangle_filled(self.rocket.center_x - SCREEN_WIDTH + self.rocket.fuel * (SCREEN_WIDTH/self.rocket.max_fuel), self.rocket.center_y - SCREEN_HEIGHT/2, SCREEN_WIDTH, 20, arcade.color.GREEN)
 
         self.explosion_list.draw()
+
+        self.fuel_progress_bar.draw()
 
     def on_update(self, delta_time):
         
         self.time -= delta_time
         if self.time <= 0:
-            print(self.score)
             self.setup()
             
+
+
 
         self.explosion_list.update_animation()
 
@@ -147,7 +150,6 @@ class GameView(arcade.View):
 
         if asteroid_hit_list:
             if not self.rocket.invincible:
-                print(self.score)
                 self.setup()
                 self.rocket.die()
 
@@ -193,6 +195,8 @@ class GameView(arcade.View):
 
         arcade.set_viewport(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2,
                             self.rocket.center_y-SCREEN_HEIGHT/2, self.rocket.center_y+SCREEN_HEIGHT/2)
+
+        self.fuel_progress_bar.update(self.rocket.center_x, self.rocket.center_y, self.rocket.fuel/self.rocket.max_fuel)
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
