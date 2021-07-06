@@ -33,18 +33,28 @@ class Rocket(arcade.Sprite):
         self.coins = 0
 
         self.last_shot = 3
-        self.shoot_speed = 3
+        self.shoot_speed = 2
 
         self.bullet_list = arcade.SpriteList()
     def update(self, delta_time, mouse_x, mouse_y):
 
+
+        if self.oxygen >= self.max_oxygen:
+            self.oxygen = self.max_oxygen
+        
         self.oxygen -= delta_time
 
 
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
 
-        self.last_shot += 1 * delta_time
+
+
+        if self.last_shot >= self.shoot_speed:
+            self.last_shot = self.shoot_speed
+        else:
+            self.last_shot += 1 * delta_time
+
 
         if self.at_base:
             self.fuel = self.max_fuel
@@ -126,6 +136,8 @@ class Marker(arcade.Sprite):
 
     def check_visibility(self, screen_width, screen_height):
         
+        screen_width = 1280
+        screen_height = 720
 
         if self.center_x + screen_width/2 > self.target.center_x and self.center_x - screen_width/2 <  self.target.center_x:
             if self.center_y + screen_height/2 > self.target.center_y and self.center_y - screen_height/2 <  self.target.center_y:
@@ -157,7 +169,7 @@ class Bullet(arcade.Sprite):
 
 
 
-ASTEROID_MIN_SIZE = 0.05
+ASTEROID_MIN_SIZE = 0.1
 ASTEROID_MAX_SIZE = 0.4
 ASTEROID_MAX_VELOCITY = 0.1
 ASTEROID_MAX_ROTATION_SPEED = 1
@@ -272,8 +284,8 @@ class ProgressBar(arcade.Sprite):
         current_screen_height = arcade.get_window().height
 
 
-        self.center_x = center_x -  current_screen_width + (self.scale * 1280 * percentage)
-        self.center_y = center_y - current_screen_height / 2 + self.y_height
+        self.center_x = center_x -  1280 + (self.scale * 1280 * percentage)
+        self.center_y = center_y - 720 / 2 + self.y_height
 
 class Background(arcade.Sprite):
     def __init__(self, parent):
@@ -284,6 +296,6 @@ class Background(arcade.Sprite):
         self.parent = parent
 
     def update(self):
-        self.center_x = self.parent.center_x - self.parent.center_x / 10
-        self.center_y = self.parent.center_y - self.parent.center_y / 10
+        self.center_x = self.parent.center_x - self.parent.center_x / 20
+        self.center_y = self.parent.center_y - self.parent.center_y / 20
     

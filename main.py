@@ -57,6 +57,8 @@ class GameView(arcade.View):
 
         self.oxygen_progress_bar = None
 
+        self.shoot_progress_bar = None
+
         self.background = None
     
     def setup(self):
@@ -64,6 +66,8 @@ class GameView(arcade.View):
         self.fuel_progress_bar = sprites.ProgressBar(5, 'green')
 
         self.oxygen_progress_bar = sprites.ProgressBar(15, 'blue')
+
+        self.shoot_progress_bar = sprites.ProgressBar(25, 'red')
 
 
         arcade.set_background_color(arcade.color.BLACK)
@@ -124,6 +128,7 @@ class GameView(arcade.View):
 
         self.fuel_progress_bar.draw()
         self.oxygen_progress_bar.draw()
+        self.shoot_progress_bar.draw()
 
     def on_update(self, delta_time):
 
@@ -184,7 +189,7 @@ class GameView(arcade.View):
                     elif asteroid.type == 'fuel':
                         self.rocket.fuel = self.rocket.max_fuel
                     elif asteroid.type == 'time':
-                        pass
+                        self.rocket.oxygen += 5
                     asteroid.kill()
 
         self.edge_marker.update()
@@ -196,6 +201,7 @@ class GameView(arcade.View):
 
         self.fuel_progress_bar.update(self.rocket.center_x, self.rocket.center_y, self.rocket.fuel/self.rocket.max_fuel)
         self.oxygen_progress_bar.update(self.rocket.center_x, self.rocket.center_y, self.rocket.oxygen/self.rocket.max_oxygen)
+        self.shoot_progress_bar.update(self.rocket.center_x, self.rocket.center_y, self.rocket.last_shot/self.rocket.shoot_speed)
 
         self.background.update()
 
@@ -261,14 +267,14 @@ class GameView(arcade.View):
                     continue
                 break
             num = random.random()
-            if num <= 0.95:
-                type = 'brown' #95% chance of default asteroid
-            elif num <= 0.97:
-                type = 'coin'  # 2%
-            elif num <= 0.99:
-                type = 'fuel'  # 2%
+            if num <= 0.8:
+                type = 'brown' #80% chance of default asteroid
+            elif num <= 0.9:
+                type = 'coin'  # 10%
+            elif num <= 0.95:
+                type = 'fuel'  # 5%
             else:
-                type = 'time' # 1%
+                type = 'time' # 5%
             self.asteroid_list.append(sprites.Asteroid(center_x, center_y, type = type))
 
     def populate_coins(self):
