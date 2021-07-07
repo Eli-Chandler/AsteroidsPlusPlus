@@ -60,8 +60,12 @@ class GameView(arcade.View):
         self.shoot_progress_bar = None
 
         self.background = None
+
+        self.earth_button_list = None
     
     def setup(self):
+
+
 
         self.fuel_progress_bar = sprites.ProgressBar(5, 'green')
 
@@ -97,6 +101,10 @@ class GameView(arcade.View):
         self.edge_marker = sprites.Marker(self.rocket, self.base)
 
         self.background = sprites.Background(self.rocket)
+
+        self.earth_button_list = []
+        self.earth_button_list.append(buttons.UpgradeButton('Thrusters', self.base, self.rocket.thrusters, 5, cost_multiplier = 2, upgrade_step = 1))
+
 
 
     def on_draw(self):
@@ -224,8 +232,41 @@ class GameView(arcade.View):
             self.rocket.damping = False
 
     def on_show_view(self):
+        self.ui_manager.purge_ui_elements()
         arcade.set_viewport(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2,
                             self.rocket.center_y-SCREEN_HEIGHT/2, self.rocket.center_y+SCREEN_HEIGHT/2)
+
+        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+
+
+        length = len(self.earth_button_list)
+        space = 300
+
+        n = 0
+        for button in self.earth_button_list:
+            if n % 2 == 0:
+                button.center_x = -100
+                button.center_y = space / length * n
+            else:
+                button.center_x = 100
+                button.center_y = space/length * (n-1)
+            self.ui_manager.add_ui_element(button)
+
+        y_slot = SCREEN_HEIGHT // 4
+        x_slot = SCREEN_WIDTH // 4
+
+        button = buttons.ChangeViewButton(
+            'Play',
+            x_slot,
+            y_slot,
+            game_view,
+            width = 250
+        )
+
+        self.ui_manager.add_ui_element(button)
+
+        
+
 
     def get_exterior_coords(self):
 
