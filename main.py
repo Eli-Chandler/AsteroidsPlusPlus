@@ -103,7 +103,9 @@ class GameView(arcade.View):
         self.background = sprites.Background(self.rocket)
 
         self.earth_button_list = []
-        self.earth_button_list.append(buttons.UpgradeButton('Thrusters', self.base, self.rocket.thrusters, 5, cost_multiplier = 2, upgrade_step = 1))
+        self.earth_button_list.append(buttons.UpgradeButton('Thrusters', self.rocket.thrusters, 5, cost_multiplier = 2, upgrade_step = 1))
+
+        self.position_buttons()
 
 
 
@@ -134,9 +136,13 @@ class GameView(arcade.View):
 
         self.explosion_list.draw()
 
+        for button in self.earth_button_list:
+            button.draw(self.rocket.at_base)
+
         self.fuel_progress_bar.draw()
         self.oxygen_progress_bar.draw()
         self.shoot_progress_bar.draw()
+
 
     def on_update(self, delta_time):
 
@@ -215,9 +221,18 @@ class GameView(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
+            button = False
+            for button in self.earth_button_list:
+                if button.check_click(x, y, self.rocket.at_base):
+                    button.on_click(self.rocket.coins)
+                    button = True
+            if button == True:
+                return
             self.rocket.thrusting = True
+
         if button == arcade.MOUSE_BUTTON_RIGHT:
             self.rocket.damping = True
+
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.SPACE:
@@ -231,14 +246,7 @@ class GameView(arcade.View):
         if button == arcade.MOUSE_BUTTON_RIGHT:
             self.rocket.damping = False
 
-    def on_show_view(self):
-        self.ui_manager.purge_ui_elements()
-        arcade.set_viewport(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2,
-                            self.rocket.center_y-SCREEN_HEIGHT/2, self.rocket.center_y+SCREEN_HEIGHT/2)
-
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
-
-
+    def position_buttons(self):
         length = len(self.earth_button_list)
         space = 300
 
@@ -250,21 +258,19 @@ class GameView(arcade.View):
             else:
                 button.center_x = 100
                 button.center_y = space/length * (n-1)
-            self.ui_manager.add_ui_element(button)
+
+    def on_show_view(self):
+        self.ui_manager.purge_ui_elements()
+        arcade.set_viewport(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2,
+                            self.rocket.center_y-SCREEN_HEIGHT/2, self.rocket.center_y+SCREEN_HEIGHT/2)
+
+        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+
+
+
 
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
-
-        button = buttons.ChangeViewButton(
-            'Play',
-            x_slot,
-            y_slot,
-            game_view,
-            width = 250
-        )
-
-        self.ui_manager.add_ui_element(button)
-
         
 
 
@@ -360,6 +366,7 @@ class MenuView(arcade.View):
         self.setup()
         arcade.set_background_color(arcade.color.BLACK)
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+
 
     def on_hide_view(self):
         self.ui_manager.unregister_handlers()

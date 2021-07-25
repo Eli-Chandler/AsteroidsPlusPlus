@@ -22,15 +22,34 @@ class FullScreenButton(arcade.gui.UIFlatButton):
 
         self.window.set_fullscreen(not self.window.fullscreen)
 
-class UpgradeButton(arcade.gui.UIFlatButton):
-    def __init__(self, text, parent, upgrade, cost, cost_multiplier = 1.1, upgrade_step = False, upgrade_multiplier = False):
-        super().__init__(text)
-        self.parent = parent
+
+class UpgradeButton():
+    def __init__(self, text, upgrade, cost, cost_multiplier = 1.1, upgrade_step = False, upgrade_multiplier = False):
+        
+        self.center_x = 0
+        self.center_y = 0
+
+        self.text = text
         self.upgrade = upgrade
+
         self.cost = cost
         self.multiplier = cost_multiplier
         self.upgrade_step = upgrade_step
         self.upgrade_multiplier = upgrade_multiplier
+
+    def check_click(self, x, y, at_base):
+        current_screen_width = arcade.get_window().width
+        current_screen_height = arcade.get_window().height
+
+        x = x - current_screen_width/2
+        y = y - current_screen_height/2
+
+        if x <= self.center_x + 50 and x >= self.center_x-50 and y <= self.center_y + 10 and y >= self.center_y - 10:
+            return True
+        return False
+
+
+
     def on_click(self, coin_count):
         if coin_count >= self.cost:
             coin_count -= self.cost
@@ -40,4 +59,8 @@ class UpgradeButton(arcade.gui.UIFlatButton):
             else:
                 self.upgrade *= self.upgrade_multiplier
 
-        print('test')
+
+    def draw(self, at_base):
+        if at_base:
+            arcade.draw_rectangle_filled(self.center_x, self.center_y, 100, 20, arcade.color.GRAY)
+            arcade.draw_text(self.text, self.center_x-25, self.center_y-5, arcade.color.BLACK)
