@@ -33,27 +33,33 @@ class UpgradeButton():
         self.upgrade = upgrade
 
         self.cost = cost
-        self.multiplier = cost_multiplier
+        self.cost_multiplier = cost_multiplier
         self.upgrade_step = upgrade_step
         self.upgrade_multiplier = upgrade_multiplier
 
-    def check_click(self, x, y, at_base):
+        self.mouse_over = True
+
+    def check_mouse(self, x, y, rocket_x, rocket_y, at_base):
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
 
-        x = x - current_screen_width/2
-        y = y - current_screen_height/2
+        x = x - current_screen_width/2 + rocket_x
+        y = y - current_screen_height/2 + rocket_y
 
-        if x <= self.center_x + 50 and x >= self.center_x-50 and y <= self.center_y + 10 and y >= self.center_y - 10:
-            return True
-        return False
+        #print(x, y)
+
+        if x <= self.center_x + 50 and x >= self.center_x-50 and y <= self.center_y + 10 and y >= self.center_y - 10 and at_base:
+            self.mouse_over = True
+        else:
+            self.mouse_over = False
 
 
 
     def on_click(self, coin_count):
-        if coin_count >= self.cost:
+        print(self.mouse_over)
+        if coin_count >= self.cost & self.mouse_over:
             coin_count -= self.cost
-            self.cost *= cost_multiplier
+            self.cost *= self.cost_multiplier
             if self.upgrade_step:
                 self.upgrade += self.upgrade_step
             else:
@@ -62,5 +68,9 @@ class UpgradeButton():
 
     def draw(self, at_base):
         if at_base:
+            if self.mouse_over:
+                arcade.draw_rectangle_filled(self.center_x, self.center_y, 110, 30, arcade.color.WHITE)
             arcade.draw_rectangle_filled(self.center_x, self.center_y, 100, 20, arcade.color.GRAY)
             arcade.draw_text(self.text, self.center_x-25, self.center_y-5, arcade.color.BLACK)
+
+

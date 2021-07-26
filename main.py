@@ -219,16 +219,19 @@ class GameView(arcade.View):
 
         self.background.update()
 
+        for button in self.earth_button_list:
+            button.check_mouse(MOUSE_X, MOUSE_Y, self.rocket.center_x, self.rocket.center_y, self.rocket.at_base)
+
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
-            button = False
+            button_ = False
+            print(x, y)
             for button in self.earth_button_list:
-                if button.check_click(x, y, self.rocket.at_base):
                     button.on_click(self.rocket.coins)
-                    button = True
-            if button == True:
-                return
-            self.rocket.thrusting = True
+                    if button.mouse_over:
+                        button_ = True
+            if not button_:
+                self.rocket.thrusting = True
 
         if button == arcade.MOUSE_BUTTON_RIGHT:
             self.rocket.damping = True
