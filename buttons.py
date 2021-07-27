@@ -46,7 +46,7 @@ class UpgradeButton():
         x = x - current_screen_width/2 + rocket_x
         y = y - current_screen_height/2 + rocket_y
 
-        #print(x, y)
+
 
         if x <= self.center_x + 50 and x >= self.center_x-50 and y <= self.center_y + 10 and y >= self.center_y - 10 and at_base:
             self.mouse_over = True
@@ -56,14 +56,15 @@ class UpgradeButton():
 
 
     def on_click(self, coin_count):
-        print(self.mouse_over)
-        if coin_count >= self.cost & self.mouse_over:
+
+        if coin_count >= self.cost and self.mouse_over:
             coin_count -= self.cost
             self.cost *= self.cost_multiplier
             if self.upgrade_step:
                 self.upgrade += self.upgrade_step
             else:
                 self.upgrade *= self.upgrade_multiplier
+            print(self.upgrade)
 
 
     def draw(self, at_base):

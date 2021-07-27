@@ -103,7 +103,7 @@ class GameView(arcade.View):
         self.background = sprites.Background(self.rocket)
 
         self.earth_button_list = []
-        self.earth_button_list.append(buttons.UpgradeButton('Thrusters', self.rocket.thrusters, 5, cost_multiplier = 2, upgrade_step = 1))
+        self.earth_button_list.append(buttons.UpgradeButton('Thrusters', self.rocket.thrusters, 5, cost_multiplier = 2, upgrade_step = 100))
 
         self.position_buttons()
 
@@ -145,6 +145,7 @@ class GameView(arcade.View):
 
 
     def on_update(self, delta_time):
+        print(self.rocket.thrusters)
 
         self.explosion_list.update_animation()
 
@@ -225,7 +226,6 @@ class GameView(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
             button_ = False
-            print(x, y)
             for button in self.earth_button_list:
                     button.on_click(self.rocket.coins)
                     if button.mouse_over:
