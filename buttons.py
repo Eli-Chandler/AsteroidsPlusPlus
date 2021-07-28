@@ -24,18 +24,22 @@ class FullScreenButton(arcade.gui.UIFlatButton):
 
 
 class UpgradeButton():
-    def __init__(self, text, upgrade, cost, cost_multiplier = 1.1, upgrade_step = False, upgrade_multiplier = False):
+    def __init__(self, text, upgrade, subject, cost, cost_multiplier = 1, upgrade_step = 0, upgrade_multiplier = 1):
         
         self.center_x = 0
         self.center_y = 0
 
         self.text = text
+
         self.upgrade = upgrade
+        self.subject = subject
 
         self.cost = cost
         self.cost_multiplier = cost_multiplier
+
         self.upgrade_step = upgrade_step
         self.upgrade_multiplier = upgrade_multiplier
+
 
         self.mouse_over = True
 
@@ -56,15 +60,8 @@ class UpgradeButton():
 
 
     def on_click(self, coin_count):
-
         if coin_count >= self.cost and self.mouse_over:
-            coin_count -= self.cost
-            self.cost *= self.cost_multiplier
-            if self.upgrade_step:
-                self.upgrade += self.upgrade_step
-            else:
-                self.upgrade *= self.upgrade_multiplier
-            print(self.upgrade)
+            self.subject.upgrade(self.upgrade, self.upgrade_step, self.upgrade_multiplier)
 
 
     def draw(self, at_base):

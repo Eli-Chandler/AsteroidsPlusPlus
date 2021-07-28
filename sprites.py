@@ -68,6 +68,7 @@ class Rocket(arcade.Sprite):
         if self.damping:
             if self.delta_x > 0:
                 self.delta_x += (self.delta_x * math.sin(self.velocity_radians)*delta_time) * self.dampers
+
             else:
                 self.delta_x -= (self.delta_x * math.sin(self.velocity_radians)*delta_time) *self.dampers
             if self.delta_y > 0:
@@ -93,10 +94,6 @@ class Rocket(arcade.Sprite):
         self.coins = 0
 
     def shoot(self):
-
-
-
-        print(self.last_shot)
         if self.last_shot < self.shoot_speed:
             return
 
@@ -107,6 +104,10 @@ class Rocket(arcade.Sprite):
         delta_y = self.delta_y + 100 * math.cos(self.radians)
         self.bullet_list.append(Bullet(self.center_x, self.center_y, delta_x, delta_y, self.angle, 2))
         self.last_shot = 0
+
+    def upgrade(self, attribute, step = 0, multiply = 1 ): #mode can be step or multiply depending on how we want to increase the attribute
+        setattr(self, attribute, getattr(self, attribute) + step) #adds the step value to the attribute (if the step value is at default value of 0 there will be no change)
+        setattr(self, attribute, getattr(self, attribute) * multiply) #multiplys the multiply value by the attribute (if the multiply value is at default of 1 there will be no change)
 
 class Marker(arcade.Sprite):
     def __init__(self, origin, target):
@@ -239,7 +240,7 @@ class Explosion(arcade.Sprite):
             'explosion5.png',
             'explosion6.png',
         ]
-        print(f'sprites/explosion/{self.texture_list[0]}')
+
         self.texture = arcade.sprite.load_texture(f'sprites/explosion/{self.texture_list[0]}')
 
         self.age = 0
