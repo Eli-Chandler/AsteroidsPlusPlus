@@ -62,6 +62,8 @@ class GameView(arcade.View):
         self.background = None
 
         self.earth_button_list = None
+
+        self.coin_counter = None
     
     def setup(self):
 
@@ -104,16 +106,18 @@ class GameView(arcade.View):
 
         self.earth_button_list = []
         self.earth_button_list.append(buttons.UpgradeButton('Thrusters', 'thrusters', self.rocket, 0, cost_multiplier = 2, upgrade_step = 100))
-        self.earth_button_list.append(buttons.UpgradeButton('Dampers', 'dampers', self.rocket, 0, upgrade_step = 1))
+        self.earth_button_list.append(buttons.UpgradeButton('Dampers', 'dampers', self.rocket, 0, upgrade_step = 0.5))
 
         self.position_buttons()
+
+        self.coin_counter = sprites.Counter(self.rocket, 'coins', -current_screen_width/2 + 50 , current_screen_height/2 - 50, 'sprites/coin/coin.png', 0.08)
+
+        self.populate_spawn_asteroids()
 
 
 
     def on_draw(self):
         
-
-
         arcade.start_render()
 
         self.background.draw()
@@ -143,6 +147,8 @@ class GameView(arcade.View):
         self.fuel_progress_bar.draw()
         self.oxygen_progress_bar.draw()
         self.shoot_progress_bar.draw()
+
+        self.coin_counter.draw()
 
 
     def on_update(self, delta_time):
@@ -208,6 +214,8 @@ class GameView(arcade.View):
 
         self.edge_marker.update()
 
+
+
         self.populate_asteroids()
 
         arcade.set_viewport(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2,
@@ -221,6 +229,8 @@ class GameView(arcade.View):
 
         for button in self.earth_button_list:
             button.check_mouse(MOUSE_X, MOUSE_Y, self.rocket.center_x, self.rocket.center_y, self.rocket.at_base)
+
+        self.coin_counter.update()
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -260,6 +270,7 @@ class GameView(arcade.View):
             else:
                 button.center_x = 100
                 button.center_y = space/length * (n-1)
+            n+= 1
 
     def on_show_view(self):
         self.ui_manager.purge_ui_elements()
@@ -286,6 +297,40 @@ class GameView(arcade.View):
         bottom = self.rocket.center_y - SCREEN_HEIGHT/2
 
         return left, right, top, bottom
+
+    def populate_spawn_asteroids(self):
+        left, right, top, bottom = [int(i) for i in self.get_exterior_coords()]
+
+        n = 0
+        new = self.asteroid_list
+        for asteroid in self.asteroid_list:
+            if asteroid.center_x > right + 100 or asteroid.center_x < left - 100:
+                new.pop(n)
+
+            elif asteroid.center_y > top + 100 or asteroid.center_y < bottom - 100:
+                new.pop(n)
+
+            n += 1
+
+        self.asteroid_list = new
+
+        amount = self.BASE_ASTEROID_COUNT - len(self.asteroid_list)
+
+        for i in range(amount):
+
+            center_x = random.randint(-current_screen_width/2 - 100, current_screen_width/2 + 100)
+            center_y = random.randint(-current_screen_width/2-100, current_screen_height/2 + 100)
+
+            num = random.random()
+            if num <= 0.8:
+                type = 'brown' #80% chance of default asteroid
+            elif num <= 0.9:
+                type = 'coin'  # 10%
+            elif num <= 0.95:
+                type = 'fuel'  # 5%
+            else:
+                type = 'time' # 5%
+            self.asteroid_list.append(sprites.Asteroid(center_x, center_y, type = type))
 
     def populate_asteroids(self):
 

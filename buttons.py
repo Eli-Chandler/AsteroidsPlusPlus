@@ -47,8 +47,12 @@ class UpgradeButton():
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
 
+
         x = x - current_screen_width/2 + rocket_x
         y = y - current_screen_height/2 + rocket_y
+
+        x = x / current_screen_width * 1280
+        y = y / current_screen_height * 720
 
 
 
