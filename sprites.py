@@ -2,6 +2,7 @@ import arcade
 import math
 import random
 
+
 class Rocket(arcade.Sprite):
     def __init__(self, image):
         super().__init__(image)
@@ -67,14 +68,14 @@ class Rocket(arcade.Sprite):
         self.velocity_radians = math.atan2(self.delta_y, self.delta_x) - 1.5708
         if self.damping:
             if self.delta_x > 0:
-                self.delta_x += (self.delta_x * math.sin(self.velocity_radians)*delta_time) * self.dampers
+                self.delta_x += self.delta_x * math.sin(self.velocity_radians) * delta_time * self.dampers
 
             else:
-                self.delta_x -= (self.delta_x * math.sin(self.velocity_radians)*delta_time) *self.dampers
+                self.delta_x -= self.delta_x * math.sin(self.velocity_radians) * delta_time *self.dampers
             if self.delta_y > 0:
-                self.delta_y -= (self.delta_y * math.cos(self.velocity_radians)*delta_time) * self.dampers
+                self.delta_y -= self.delta_y * math.cos(self.velocity_radians) * delta_time * self.dampers
             else:
-                self.delta_y += (self.delta_y * math.cos(self.velocity_radians)*delta_time) *self.dampers
+                self.delta_y += self.delta_y * math.cos(self.velocity_radians) * delta_time *self.dampers
         elif self.thrusting and self.fuel > 0:
             self.fuel -= 1 * delta_time
             self.delta_x += -self.thrusters * math.sin(self.radians)*delta_time
@@ -299,4 +300,25 @@ class Background(arcade.Sprite):
     def update(self):
         self.center_x = self.parent.center_x - self.parent.center_x / 20
         self.center_y = self.parent.center_y - self.parent.center_y / 20
+
+class Counter(arcade.Sprite):
+    def __init__(self, parent, count, offset_x, offset_y, image, scale = 1):
+        super().__init__(image, scale)
+
+        self.parent = parent
+        self.count = count
+        self.offset_x = offset_x
+        self.offset_y = offset_y
     
+    def update(self):
+        self.center_x = self.parent.center_x + self.offset_x
+        self.center_y = self.parent.center_y + self.offset_y
+    def draw(self):
+        if self._sprite_list is None:
+            self._sprite_list = arcade.SpriteList()
+            self._sprite_list.append(self)
+
+        count = getattr(self.parent, self.count)
+
+        self._sprite_list.draw()
+        arcade.draw_text(str(count), self.center_x + 32 * len(str(count)), self.center_y - self.height/4, arcade.color.WHITE, 32)
