@@ -1,3 +1,4 @@
+import logging
 import arcade
 import arcade.gui
 from arcade.gui import UIManager
@@ -16,8 +17,6 @@ current_screen_width = SCREEN_WIDTH
 
 MOUSE_X = 0
 MOUSE_Y = 0
-
-
 
 USE_SPATIAL_HASHING = False
 

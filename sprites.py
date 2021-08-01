@@ -68,14 +68,32 @@ class Rocket(arcade.Sprite):
         self.velocity_radians = math.atan2(self.delta_y, self.delta_x) - 1.5708
         if self.damping:
             if self.delta_x > 0:
-                self.delta_x += self.delta_x * math.sin(self.velocity_radians) * delta_time * self.dampers
+                
+
+                change = self.delta_x * math.sin(self.velocity_radians) * delta_time * self.dampers
+                if abs(change) > abs(self.delta_x):
+                    self.delta_x = 0
+                else:
+                    self.delta_x += change
 
             else:
-                self.delta_x -= self.delta_x * math.sin(self.velocity_radians) * delta_time *self.dampers
+                change = self.delta_x * math.sin(self.velocity_radians) * delta_time *self.dampers
+                if abs(change) > abs(self.delta_x):
+                    self.delta_x = 0
+                else:
+                    self.delta_x -= change    
             if self.delta_y > 0:
-                self.delta_y -= self.delta_y * math.cos(self.velocity_radians) * delta_time * self.dampers
+                change = self.delta_y * math.cos(self.velocity_radians) * delta_time * self.dampers
+                if abs(change) > abs(self.delta_y):
+                    self.delta_y = 0
+                else:
+                    self.delta_y -= change
             else:
-                self.delta_y += self.delta_y * math.cos(self.velocity_radians) * delta_time *self.dampers
+                change = self.delta_y * math.cos(self.velocity_radians) * delta_time *self.dampers
+                if abs(change) > abs(self.delta_y):
+                    self.delta_y = 0
+                else:
+                    self.delta_y += change
         elif self.thrusting and self.fuel > 0:
             self.fuel -= 1 * delta_time
             self.delta_x += -self.thrusters * math.sin(self.radians)*delta_time
