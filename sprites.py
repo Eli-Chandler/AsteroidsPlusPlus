@@ -36,6 +36,8 @@ class Rocket(arcade.Sprite):
         self.last_shot = 3
         self.shoot_speed = 2
 
+        self.bullet_max_age = 2
+
         self.bullet_list = arcade.SpriteList()
     def update(self, delta_time, mouse_x, mouse_y):
 
@@ -121,7 +123,7 @@ class Rocket(arcade.Sprite):
         
         delta_x = self.delta_x -100 * math.sin(self.radians)
         delta_y = self.delta_y + 100 * math.cos(self.radians)
-        self.bullet_list.append(Bullet(self.center_x, self.center_y, delta_x, delta_y, self.angle, 2))
+        self.bullet_list.append(Bullet(self.center_x, self.center_y, delta_x, delta_y, self.angle, self.bullet_max_age))
         self.last_shot = 0
 
     def upgrade(self, attribute, step = 0, multiply = 1 ): #mode can be step or multiply depending on how we want to increase the attribute

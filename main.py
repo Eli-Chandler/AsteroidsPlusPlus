@@ -106,6 +106,9 @@ class GameView(arcade.View):
         self.earth_button_list = []
         self.earth_button_list.append(buttons.UpgradeButton('Thrusters', 'thrusters', self.rocket, 0, cost_multiplier = 2, upgrade_step = 100))
         self.earth_button_list.append(buttons.UpgradeButton('Dampers', 'dampers', self.rocket, 0, upgrade_step = 0.5))
+        self.earth_button_list.append(buttons.UpgradeButton('Fire Rate', 'shoot_speed', self.rocket, 0, upgrade_multiplier=0.9))
+        self.earth_button_list.append(buttons.UpgradeButton('Fuel', 'max_fuel', self.rocket, 0, upgrade_multiplier=1.1))
+        self.earth_button_list.append(buttons.UpgradeButton('Shot Distance', 'bullet_max_age', self.rocket, 0, upgrade_multiplier= 1.1))
 
         self.position_buttons()
 
@@ -265,10 +268,10 @@ class GameView(arcade.View):
         for button in self.earth_button_list:
             if n % 2 == 0:
                 button.center_x = -100
-                button.center_y = space / length * n
+                button.center_y = space / length * n -space/4
             else:
                 button.center_x = 100
-                button.center_y = space/length * (n-1)
+                button.center_y = space/length * (n-1) -space/4
             n+= 1
 
     def on_show_view(self):
