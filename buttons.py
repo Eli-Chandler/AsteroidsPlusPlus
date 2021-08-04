@@ -63,16 +63,20 @@ class UpgradeButton():
 
 
 
-    def on_click(self, coin_count):
-        if coin_count >= self.cost and self.mouse_over:
+    def on_click(self):
+        if self.subject.coins >= self.cost and self.mouse_over:
             self.subject.upgrade(self.upgrade, self.upgrade_step, self.upgrade_multiplier)
+            self.subject.coins -= self.cost
+            self.cost *= self.cost_multiplier
+            self.cost = int(self.cost)
+            
 
 
     def draw(self, at_base):
         if at_base:
             if self.mouse_over:
-                arcade.draw_rectangle_filled(self.center_x, self.center_y, 110, 30, arcade.color.WHITE)
-            arcade.draw_rectangle_filled(self.center_x, self.center_y, 100, 20, arcade.color.GRAY)
-            arcade.draw_text(self.text, self.center_x-25, self.center_y-5, arcade.color.BLACK)
+                arcade.draw_rectangle_filled(self.center_x, self.center_y, 110, 40, arcade.color.WHITE)
+            arcade.draw_rectangle_filled(self.center_x, self.center_y, 100, 30, arcade.color.GRAY)
+            arcade.draw_text(self.text + f'\n({self.cost} Coins)', self.center_x-30, self.center_y-15, arcade.color.BLACK)
 
 

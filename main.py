@@ -63,10 +63,16 @@ class GameView(arcade.View):
         self.earth_button_list = None
 
         self.coin_counter = None
+
+        self.music = None
+
+        self.music_player = None
     
     def setup(self):
 
-
+        self.music = arcade.Sound('music.mp3', streaming=True)
+        self.music_player = self.music.play()
+        #arcade.sound.
 
         self.fuel_progress_bar = sprites.ProgressBar(5, 'green')
 
@@ -104,11 +110,12 @@ class GameView(arcade.View):
         self.background = sprites.Background(self.rocket)
 
         self.earth_button_list = []
-        self.earth_button_list.append(buttons.UpgradeButton('Thrusters', 'thrusters', self.rocket, 0, cost_multiplier = 2, upgrade_step = 100))
-        self.earth_button_list.append(buttons.UpgradeButton('Dampers', 'dampers', self.rocket, 0, upgrade_step = 0.5))
-        self.earth_button_list.append(buttons.UpgradeButton('Fire Rate', 'shoot_speed', self.rocket, 0, upgrade_multiplier=0.9))
-        self.earth_button_list.append(buttons.UpgradeButton('Fuel', 'max_fuel', self.rocket, 0, upgrade_multiplier=1.1))
-        self.earth_button_list.append(buttons.UpgradeButton('Shot Distance', 'bullet_max_age', self.rocket, 0, upgrade_multiplier= 1.1))
+        self.earth_button_list.append(buttons.UpgradeButton('Thrusters', 'thrusters', self.rocket, 1, cost_multiplier = 2, upgrade_step = 100))
+        self.earth_button_list.append(buttons.UpgradeButton('Dampers', 'dampers', self.rocket, 1, cost_multiplier = 2, upgrade_step = 0.5))
+        self.earth_button_list.append(buttons.UpgradeButton('Fire Rate', 'shoot_speed', self.rocket, 1, cost_multiplier = 2, upgrade_multiplier=0.9))
+        self.earth_button_list.append(buttons.UpgradeButton('Fuel', 'max_fuel', self.rocket, 5, cost_multiplier = 1.5, upgrade_step = 5))
+        self.earth_button_list.append(buttons.UpgradeButton('Oxygen', 'max_oxygen', self.rocket, 5, cost_multiplier = 1.5, upgrade_step = 5))
+        self.earth_button_list.append(buttons.UpgradeButton('Shot Distance', 'bullet_max_age', self.rocket, 1, cost_multiplier = 2, upgrade_multiplier= 1.5))
 
         self.position_buttons()
 
@@ -116,10 +123,15 @@ class GameView(arcade.View):
 
         self.populate_spawn_asteroids()
 
-
+    def play_music(self):
+        if not self.music.is_playing(self.music_player):
+            self.music = arcade.Sound('music.mp3', streaming=True)
+            self.music_player = self.music.play()
 
     def on_draw(self):
         
+        
+
         arcade.start_render()
 
         self.background.draw()
@@ -154,6 +166,9 @@ class GameView(arcade.View):
 
 
     def on_update(self, delta_time):
+
+        self.play_music()
+
         self.explosion_list.update_animation()
 
         for explosion in self.explosion_list:
@@ -177,7 +192,6 @@ class GameView(arcade.View):
 
         if asteroid_hit_list:
             if not self.rocket.invincible:
-                self.setup()
                 self.rocket.die()
 
         base_hit_list = arcade.check_for_collision_with_list(self.base, self.asteroid_list)
@@ -238,7 +252,7 @@ class GameView(arcade.View):
         if button == arcade.MOUSE_BUTTON_LEFT:
             button_ = False
             for button in self.earth_button_list:
-                    button.on_click(self.rocket.coins)
+                    button.on_click()
                     if button.mouse_over:
                         button_ = True
             if not button_:
