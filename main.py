@@ -136,10 +136,6 @@ class GameView(arcade.View):
 
         self.background.draw()
 
-        
-        self.rocket.bullet_list.draw()
-
-
         self.coin_list.draw()
         
         if not self.rocket.at_base and self.edge_marker.check_visibility(current_screen_width, current_screen_height):
@@ -147,11 +143,9 @@ class GameView(arcade.View):
 
         self.base.draw()
 
-
         self.rocket.draw()
 
         self.asteroid_list.draw()
-
 
         self.explosion_list.draw()
 
@@ -163,6 +157,8 @@ class GameView(arcade.View):
         self.shoot_progress_bar.draw()
 
         self.coin_counter.draw()
+
+        self.rocket.bullet_list.draw()
 
 
     def on_update(self, delta_time):
@@ -197,6 +193,7 @@ class GameView(arcade.View):
         base_hit_list = arcade.check_for_collision_with_list(self.base, self.asteroid_list)
 
         for asteroid in base_hit_list:
+            self.explosion_list.append(sprites.Explosion(asteroid))
             asteroid.kill()
 
         at_base_check = arcade.check_for_collision(self.rocket, self.base)
