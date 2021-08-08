@@ -36,7 +36,6 @@ class GameView(arcade.View):
 
         self.dead = None
 
-        self.base = None
 
         self.coin_list = None
 
@@ -50,7 +49,7 @@ class GameView(arcade.View):
 
         self.score = None
 
-        self.edge_marker = None
+        self.edge_marker_list = None
 
         self.fuel_progress_bar = None
 
@@ -67,7 +66,8 @@ class GameView(arcade.View):
         self.music = None
 
         self.music_player = None
-    
+
+        self.planet_list = arcade.SpriteList()
     def setup(self):
 
         self.music = arcade.Sound('music.mp3', streaming=True)
@@ -103,9 +103,13 @@ class GameView(arcade.View):
 
         self.asteroid_list = arcade.SpriteList(use_spatial_hash=USE_SPATIAL_HASHING)
 
-        self.base = arcade.Sprite('sprites/planets/earth.png', 1, center_x=0, center_y=0)
+        self.earth = arcade.Sprite('sprites/planets/earth.png', 1, 0, 0)
+        self.planet_list.append(self.earth)
 
-        self.edge_marker = sprites.Marker(self.rocket, self.base)
+        self.edge_marker_list = arcade.SpriteList()
+        for planet in self.planet_list:
+            edge_marker = sprites.Marker(self.rocket, planet)
+            self.edge_marker_list.append(edge_marker)
 
         self.background = sprites.Background(self.rocket)
 
@@ -138,10 +142,11 @@ class GameView(arcade.View):
 
         self.coin_list.draw()
         
-        if not self.rocket.at_base and self.edge_marker.check_visibility(current_screen_width, current_screen_height):
-            self.edge_marker.draw()
+        for edge_marker in self.edge_marker_list:
+            if not self.rocket.at_base and edge_marker.check_visibility(current_screen_width, current_screen_height):
+                edge_marker.draw()
 
-        self.base.draw()
+        self.planet_list.draw()
 
         self.rocket.draw()
 
@@ -189,14 +194,18 @@ class GameView(arcade.View):
         if asteroid_hit_list:
             if not self.rocket.invincible:
                 self.rocket.die()
+        
+        for planet in self.planet_list:
+            base_hit_list = arcade.check_for_collision_with_list(planet, self.asteroid_list)
 
-        base_hit_list = arcade.check_for_collision_with_list(self.base, self.asteroid_list)
+            for asteroid in base_hit_list:
+                self.explosion_list.append(sprites.Explosion(asteroid))
+                asteroid.kill()
 
-        for asteroid in base_hit_list:
-            self.explosion_list.append(sprites.Explosion(asteroid))
-            asteroid.kill()
-
-        at_base_check = arcade.check_for_collision(self.rocket, self.base)
+        for planet in self.planet_list:
+            at_base_check = arcade.check_for_collision(self.rocket, planet)
+            if at_base_check:
+                break
 
         if at_base_check:
             self.rocket.at_base = True
@@ -225,7 +234,7 @@ class GameView(arcade.View):
                         self.rocket.oxygen += 5
                     asteroid.kill()
 
-        self.edge_marker.update()
+        self.edge_marker_list.update()
 
 
 

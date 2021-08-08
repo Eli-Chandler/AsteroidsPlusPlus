@@ -131,8 +131,7 @@ class Rocket(arcade.Sprite):
         setattr(self, attribute, getattr(self, attribute) * multiply) #multiplys the multiply value by the attribute (if the multiply value is at default of 1 there will be no change)
 
 class Marker(arcade.Sprite):
-    def __init__(self, origin, target):
-        image = 'sprites/edge marker.png'
+    def __init__(self, origin, target, image = 'sprites/planets/edge marker_earth.png'):
         scale = 1
         super().__init__(image, scale)
 
@@ -342,3 +341,7 @@ class Counter(arcade.Sprite):
 
         self._sprite_list.draw()
         arcade.draw_text(str(count), self.center_x + 32 * len(str(count)), self.center_y - self.height/4, arcade.color.WHITE, 32)
+
+class Planet(arcade.Sprite):
+    def __init__(self, image, scale, center_x = 0, center_y = 0):
+        super().__init__(image, scale)
