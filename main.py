@@ -67,7 +67,7 @@ class GameView(arcade.View):
 
         self.music_player = None
 
-        self.planet_list = arcade.SpriteList()
+        self.planet_list = None
     def setup(self):
 
         self.music = arcade.Sound('music.mp3', streaming=True)
@@ -102,6 +102,9 @@ class GameView(arcade.View):
         self.rocket_list.append(self.rocket)
 
         self.asteroid_list = arcade.SpriteList(use_spatial_hash=USE_SPATIAL_HASHING)
+
+        self.planet_list = arcade.SpriteList()
+
 
         self.earth = arcade.Sprite('sprites/planets/earth.png', 1, 0, 0)
         self.planet_list.append(self.earth)

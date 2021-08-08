@@ -343,5 +343,6 @@ class Counter(arcade.Sprite):
         arcade.draw_text(str(count), self.center_x + 32 * len(str(count)), self.center_y - self.height/4, arcade.color.WHITE, 32)
 
 class Planet(arcade.Sprite):
-    def __init__(self, image, scale, center_x = 0, center_y = 0):
+    def __init__(self, name, image, scale, center_x = 0, center_y = 0):
         super().__init__(image, scale)
+    
