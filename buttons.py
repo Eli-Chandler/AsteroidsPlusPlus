@@ -22,6 +22,16 @@ class FullScreenButton(arcade.gui.UIFlatButton):
 
         self.window.set_fullscreen(not self.window.fullscreen)
 
+class ToggleAttributeButton(arcade.gui.UIFlatButton):
+    def __init__(self, text, center_x, center_y, view, attribute, width = 100, height = 100):
+        super().__init__(text, center_x, center_y, width, height)
+
+        self.view = view
+        self.attribute = attribute
+
+    def on_click(self):
+        setattr(self.view, self.attribute, not getattr(self.view, self.attribute))
+
 
 class UpgradeButton():
     def __init__(self, text, upgrade, subject, cost, cost_multiplier = 1, upgrade_step = 0, upgrade_multiplier = 1):

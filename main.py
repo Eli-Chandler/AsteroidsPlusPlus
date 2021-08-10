@@ -9,6 +9,7 @@ from datetime import datetime
 
 import sprites
 import buttons
+import planets
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -105,11 +106,14 @@ class GameView(arcade.View):
 
         self.planet_list = arcade.SpriteList()
 
+        self.earth = planets.Earth(self.rocket, 0, 0)
 
-        self.earth = arcade.Sprite('sprites/planets/earth.png', 1, 0, 0)
+
         self.planet_list.append(self.earth)
+        #self.planet_list.append(self.mars)
 
         self.edge_marker_list = arcade.SpriteList()
+
         for planet in self.planet_list:
             edge_marker = sprites.Marker(self.rocket, planet)
             self.edge_marker_list.append(edge_marker)
@@ -117,18 +121,15 @@ class GameView(arcade.View):
         self.background = sprites.Background(self.rocket)
 
         self.earth_button_list = []
-        self.earth_button_list.append(buttons.UpgradeButton('Thrusters', 'thrusters', self.rocket, 1, cost_multiplier = 2, upgrade_step = 100))
-        self.earth_button_list.append(buttons.UpgradeButton('Dampers', 'dampers', self.rocket, 1, cost_multiplier = 2, upgrade_step = 0.5))
-        self.earth_button_list.append(buttons.UpgradeButton('Fire Rate', 'shoot_speed', self.rocket, 1, cost_multiplier = 2, upgrade_multiplier=0.9))
-        self.earth_button_list.append(buttons.UpgradeButton('Fuel', 'max_fuel', self.rocket, 5, cost_multiplier = 1.5, upgrade_step = 5))
-        self.earth_button_list.append(buttons.UpgradeButton('Oxygen', 'max_oxygen', self.rocket, 5, cost_multiplier = 1.5, upgrade_step = 5))
-        self.earth_button_list.append(buttons.UpgradeButton('Shot Distance', 'bullet_max_age', self.rocket, 1, cost_multiplier = 2, upgrade_multiplier= 1.5))
+
 
         self.position_buttons()
 
         self.coin_counter = sprites.Counter(self.rocket, 'coins', -current_screen_width/2 + 50 , current_screen_height/2 - 50, 'sprites/coin/coin.png', 0.08)
 
         self.populate_spawn_asteroids()
+
+        self.frame_rate_list = []
 
     def play_music(self):
         if not self.music.is_playing(self.music_player):
@@ -169,6 +170,7 @@ class GameView(arcade.View):
         self.rocket.bullet_list.draw()
 
 
+
     def on_update(self, delta_time):
 
         self.play_music()
@@ -194,8 +196,13 @@ class GameView(arcade.View):
 
         asteroid_hit_list = arcade.check_for_collision_with_list(self.rocket, self.asteroid_list)
 
+
+
         if asteroid_hit_list:
             if not self.rocket.invincible:
+                for asteroid in self.asteroid_list:
+                    self.asteroid_list.remove(asteroid)
+                self.populate_spawn_asteroids()
                 self.rocket.die()
         
         for planet in self.planet_list:
