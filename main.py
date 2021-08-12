@@ -60,8 +60,6 @@ class GameView(arcade.View):
 
         self.background = None
 
-        self.earth_button_list = None
-
         self.coin_counter = None
 
         self.music = None
@@ -108,8 +106,13 @@ class GameView(arcade.View):
 
         self.earth = planets.Earth(self.rocket, 0, 0)
 
+        x = [random.randint(4000, 5000), random.randint(-5000, -4000)]
+        y = [random.randint(4000, 5000), random.randint(-5000, -4000)]
+        self.mars = planets.Mars(self.rocket, random.choice(x), random.choice(y))
+        print(self.mars.center_x, self.mars.center_y)
 
         self.planet_list.append(self.earth)
+        self.planet_list.append(self.mars)
         #self.planet_list.append(self.mars)
 
         self.edge_marker_list = arcade.SpriteList()
@@ -119,9 +122,6 @@ class GameView(arcade.View):
             self.edge_marker_list.append(edge_marker)
 
         self.background = sprites.Background(self.rocket)
-
-        self.earth_button_list = []
-
 
         self.position_buttons()
 
@@ -144,13 +144,19 @@ class GameView(arcade.View):
 
         self.background.draw()
 
+        self.planet_list.draw()
+
+
+
         self.coin_list.draw()
         
         for edge_marker in self.edge_marker_list:
             if not self.rocket.at_base and edge_marker.check_visibility(current_screen_width, current_screen_height):
                 edge_marker.draw()
 
-        self.planet_list.draw()
+        for planet in self.planet_list:
+            for button in planet.button_list:
+                button.draw(self.rocket.at_base)
 
         self.rocket.draw()
 
@@ -158,8 +164,7 @@ class GameView(arcade.View):
 
         self.explosion_list.draw()
 
-        for button in self.earth_button_list:
-            button.draw(self.rocket.at_base)
+
 
         self.fuel_progress_bar.draw()
         self.oxygen_progress_bar.draw()
@@ -189,6 +194,7 @@ class GameView(arcade.View):
         self.coin_list.update()
         self.populate_coins()
 
+        self.planet_list.update()
 
         self.rocket.update(delta_time, MOUSE_X, MOUSE_Y)
 
@@ -213,12 +219,9 @@ class GameView(arcade.View):
                 asteroid.kill()
 
         for planet in self.planet_list:
-            at_base_check = arcade.check_for_collision(self.rocket, planet)
-            if at_base_check:
+            self.rocket.at_base = arcade.check_for_collision(self.rocket, planet)
+            if self.rocket.at_base:
                 break
-
-        if at_base_check:
-            self.rocket.at_base = True
 
         else:
             self.rocket.at_base = False
@@ -258,19 +261,20 @@ class GameView(arcade.View):
         self.shoot_progress_bar.update(self.rocket.center_x, self.rocket.center_y, self.rocket.last_shot/self.rocket.shoot_speed)
 
         self.background.update()
-
-        for button in self.earth_button_list:
-            button.check_mouse(MOUSE_X, MOUSE_Y, self.rocket.center_x, self.rocket.center_y, self.rocket.at_base)
+        for planet in self.planet_list:
+            for button in planet.button_list:
+                button.check_mouse(MOUSE_X, MOUSE_Y, self.rocket.center_x, self.rocket.center_y, self.rocket.at_base)
 
         self.coin_counter.update()
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
             button_ = False
-            for button in self.earth_button_list:
-                    button.on_click()
-                    if button.mouse_over:
-                        button_ = True
+            for planet in self.planet_list:
+                for button in planet.button_list:
+                        button.on_click()
+                        if button.mouse_over:
+                            button_ = True
             if not button_:
                 self.rocket.thrusting = True
 
@@ -291,18 +295,21 @@ class GameView(arcade.View):
             self.rocket.damping = False
 
     def position_buttons(self):
-        length = len(self.earth_button_list)
-        space = 300
+        for planet in self.planet_list:
+            print(planet)
+            print(planet.button_list)
+            length = len(planet.button_list)
+            space = 300
 
-        n = 0
-        for button in self.earth_button_list:
-            if n % 2 == 0:
-                button.center_x = -100
-                button.center_y = space / length * n -space/4
-            else:
-                button.center_x = 100
-                button.center_y = space/length * (n-1) -space/4
-            n+= 1
+            n = 0
+            for button in planet.button_list:
+                if n % 2 == 0:
+                    button.center_x = -100
+                    button.center_y = space / length * n -space/4
+                else:
+                    button.center_x = 100
+                    button.center_y = space/length * (n-1) -space/4
+                n+= 1
 
     def on_show_view(self):
         self.ui_manager.purge_ui_elements()
@@ -421,8 +428,6 @@ class GameView(arcade.View):
                     coin_x = random.randint(chunk[0] * 1000, chunk[0] * 1000 + 1000)
                     coin_y = random.randint(chunk[1] * 1000, chunk[1] * 1000 + 1000)
                     self.coin_list.append(sprites.Coin(coin_x, coin_y, 0.05))
-
-
 
 
     def on_mouse_motion(self, x, y, dx, dy):

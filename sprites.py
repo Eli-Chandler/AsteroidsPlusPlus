@@ -344,11 +344,9 @@ class Counter(arcade.Sprite):
         arcade.draw_text(str(count), self.center_x + 32 * len(str(count)), self.center_y - self.height/4, arcade.color.WHITE, 32)
 
 class Planet(arcade.Sprite):
-    def __init__(self, name, rocket, image, scale, center_x = 0, center_y = 0):
+    def __init__(self, name, rocket, image, scale):
         super().__init__(image, scale)
         self.name = name
-        self.center_x = center_x
-        self.center_y = center_y
         self.button_list = []
         self.rocket = rocket
         self.edge_marker = Marker(rocket, self, f'sprites/planets/edge marker_{self.name}.png')

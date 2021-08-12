@@ -66,7 +66,7 @@ class UpgradeButton():
 
 
 
-        if x <= self.center_x + 50 and x >= self.center_x-50 and y <= self.center_y + 10 and y >= self.center_y - 10 and at_base:
+        if x <= self.center_x + 50 and x >= self.center_x-50 and y <= self.center_y + 15 and y >= self.center_y - 15 and at_base:
             self.mouse_over = True
         else:
             self.mouse_over = False
