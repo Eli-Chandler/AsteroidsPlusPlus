@@ -132,8 +132,9 @@ class Rocket(arcade.Sprite):
         setattr(self, attribute, getattr(self, attribute) * multiply) #multiplys the multiply value by the attribute (if the multiply value is at default of 1 there will be no change)
 
 class Marker(arcade.Sprite):
-    def __init__(self, origin, target, image = 'sprites/planets/edge marker_earth.png'):
+    def __init__(self, origin, target):
         scale = 1
+        image = f'sprites/planets/edge marker_{target.name}.png'
         super().__init__(image, scale)
 
         self.center_x = origin.center_x
@@ -349,5 +350,7 @@ class Planet(arcade.Sprite):
         self.name = name
         self.button_list = []
         self.rocket = rocket
-        self.edge_marker = Marker(rocket, self, f'sprites/planets/edge marker_{self.name}.png')
+    
+    def on_collision(self):
+        pass
 

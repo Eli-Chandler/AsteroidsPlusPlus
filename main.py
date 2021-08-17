@@ -212,14 +212,20 @@ class GameView(arcade.View):
                 self.rocket.die()
         
         for planet in self.planet_list:
-            base_hit_list = arcade.check_for_collision_with_list(planet, self.asteroid_list)
+            planet_hit_list = arcade.check_for_collision_with_list(planet, self.asteroid_list)
 
-            for asteroid in base_hit_list:
+            if planet_hit_list:
+                if planet.name == 'mars':
+                    window.show_view(WinView())
+
+            for asteroid in planet_hit_list:
                 self.explosion_list.append(sprites.Explosion(asteroid))
                 asteroid.kill()
 
+
         for planet in self.planet_list:
             self.rocket.at_base = arcade.check_for_collision(self.rocket, planet)
+
             if self.rocket.at_base:
                 break
 
@@ -434,6 +440,22 @@ class GameView(arcade.View):
         global MOUSE_X, MOUSE_Y
         MOUSE_X = x
         MOUSE_Y = y
+
+class WinView(arcade.View):
+    def __init__(self):
+        super().__init__()
+
+        self.ui_manager = UIManager()
+
+    def on_draw(self):
+        arcade.start_render()
+
+    def setup(self):
+        self.victory_sprite = arcade.Sprite()
+
+    def on_show_view(self):
+        self.setup()
+        arcade.set_viewport(0, current_screen_width - 1, 0, current_screen_height - 1)
 
 class MenuView(arcade.View):
     def __init__(self):
