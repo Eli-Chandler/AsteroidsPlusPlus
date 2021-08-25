@@ -40,6 +40,9 @@ class Rocket(arcade.Sprite):
         self.bullet_max_age = 2
 
         self.bullet_list = arcade.SpriteList()
+
+        self.lives = 3
+
     def update(self, delta_time, mouse_x, mouse_y):
 
 
@@ -114,6 +117,8 @@ class Rocket(arcade.Sprite):
         self.delta_y = 0
 
         self.coins = 0
+
+        self.lives -= 1
 
     def shoot(self):
         if self.last_shot < self.shoot_speed:

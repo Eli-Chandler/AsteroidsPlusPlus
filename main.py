@@ -71,7 +71,6 @@ class GameView(arcade.View):
 
         self.music = arcade.Sound('music.mp3', streaming=True)
         self.music_player = self.music.play()
-        #arcade.sound.
 
         self.fuel_progress_bar = sprites.ProgressBar(5, 'green')
 
@@ -111,7 +110,7 @@ class GameView(arcade.View):
         self.mars = planets.Mars(self.rocket, random.choice(x), random.choice(y))
         print(self.mars.center_x, self.mars.center_y)
 
-        self.earth.button_list.append(buttons.UpgradeButton('Mars location marker', 'show_edge_marker', self.mars, 30, cost_multiplier = 0, upgrade_step = 1))
+        self.earth.button_list.append(buttons.UpgradeButton('Mars location', 'show_edge_marker', self.mars, 30, cost_multiplier = 0, upgrade_step = 1))
 
         self.planet_list.append(self.earth)
         self.planet_list.append(self.mars)
@@ -183,6 +182,10 @@ class GameView(arcade.View):
 
     def on_update(self, delta_time):
 
+        if self.rocket.lives <= 0:
+            window.show_view(LoseView())
+
+        
         self.mars.coins = self.rocket.coins
 
         self.play_music()
@@ -299,7 +302,7 @@ class GameView(arcade.View):
         if key == arcade.key.SPACE:
             self.rocket.shoot()
         if key == arcade.key.ESCAPE:
-            window.show_view(MenuView())
+            window.show_view(WinView())
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -453,16 +456,102 @@ class WinView(arcade.View):
         super().__init__()
 
         self.ui_manager = UIManager()
+        self.background_sprite = None
+
 
     def on_draw(self):
         arcade.start_render()
+        y_slot = SCREEN_HEIGHT // 4
+        x_slot = SCREEN_WIDTH // 4
+
+        self.background_sprite.draw()
+        self.victory_sprite.draw()
+        arcade.draw_text('Thats all the content in the game for now, feel free to continue in free play by pressing this button!', x_slot, y_slot * 2, arcade.color.GREEN)
+        
 
     def setup(self):
-        self.victory_sprite = arcade.Sprite()
+        y_slot = SCREEN_HEIGHT // 4
+        x_slot = SCREEN_WIDTH // 4
+        self.victory_sprite = arcade.Sprite('sprites/menu/victory.png', 1, center_x = x_slot * 2, center_y = y_slot * 3)
+
+        self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1)
+        self.background_sprite.center_x = 1280/2
+        self.background_sprite.center_y = 720/2
+
+        #self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1, 1280/2, 720/2)
+
+
+        button = buttons.ChangeViewButton(
+            'Play',
+            x_slot,
+            y_slot,
+            game_view,
+            width = 250
+        )
+
+        self.ui_manager.add_ui_element(button)
+
+
+    def on_hide_view(self):
+        self.ui_manager.unregister_handlers()
 
     def on_show_view(self):
         self.setup()
         arcade.set_viewport(0, current_screen_width - 1, 0, current_screen_height - 1)
+
+class LoseView(arcade.View):
+    def __init__(self):
+        super().__init__()
+
+        self.ui_manager = UIManager()
+        self.background_sprite = None
+
+
+    def on_draw(self):
+
+        arcade.set_viewport(0, current_screen_width - 1, 0, current_screen_height - 1)
+        arcade.start_render()
+        y_slot = SCREEN_HEIGHT // 4
+        x_slot = SCREEN_WIDTH // 4
+
+        self.background_sprite.draw()
+        self.lose_sprite.draw()
+        arcade.draw_text('You lost!', x_slot, y_slot * 2, arcade.color.RED)
+        
+
+    def setup(self):
+        y_slot = SCREEN_HEIGHT // 4
+        x_slot = SCREEN_WIDTH // 4
+        self.lose_sprite = arcade.Sprite('sprites/menu/failure.png', 1, center_x = x_slot * 2, center_y = y_slot * 3)
+
+        self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1)
+        self.background_sprite.center_x = 1280/2
+        self.background_sprite.center_y = 720/2
+
+        #self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1, 1280/2, 720/2)
+
+
+        button = buttons.ChangeViewButton(
+            'Play',
+            x_slot,
+            y_slot,
+            game_view,
+            width = 250
+        )
+
+        self.ui_manager.add_ui_element(button)
+
+
+    def on_hide_view(self):
+        self.ui_manager.unregister_handlers()
+
+    def on_show_view(self):
+        self.setup()
+
+        game_view.setup()
+
+
+
 
 class MenuView(arcade.View):
     def __init__(self):
