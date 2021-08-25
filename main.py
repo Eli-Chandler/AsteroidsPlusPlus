@@ -67,6 +67,9 @@ class GameView(arcade.View):
         self.music_player = None
 
         self.planet_list = None
+
+        self.music_enabled = True
+
     def setup(self):
 
         self.music = arcade.Sound('music.mp3', streaming=True)
@@ -188,7 +191,8 @@ class GameView(arcade.View):
         
         self.mars.coins = self.rocket.coins
 
-        self.play_music()
+        if self.music_enabled:
+            self.play_music()
 
         self.explosion_list.update_animation()
 
@@ -224,9 +228,9 @@ class GameView(arcade.View):
         for planet in self.planet_list:
             planet_hit_list = arcade.check_for_collision_with_list(planet, self.asteroid_list)
 
-            if planet_hit_list:
-                if planet.name == 'mars':
-                    window.show_view(WinView())
+            #if planet_hit_list:
+                #if planet.name == 'mars':
+                   # window.show_view(MenuView())
 
             for asteroid in planet_hit_list:
                 self.explosion_list.append(sprites.Explosion(asteroid))
@@ -235,6 +239,9 @@ class GameView(arcade.View):
 
         for planet in self.planet_list:
             self.rocket.at_base = arcade.check_for_collision(self.rocket, planet)
+
+            if self.rocket.at_base and planet.name == 'mars':
+                window.show_view(WinView())
 
             if self.rocket.at_base:
                 break
@@ -302,7 +309,7 @@ class GameView(arcade.View):
         if key == arcade.key.SPACE:
             self.rocket.shoot()
         if key == arcade.key.ESCAPE:
-            window.show_view(WinView())
+            window.show_view(MenuView())
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -595,6 +602,15 @@ class MenuView(arcade.View):
         button = buttons.FullScreenButton(
             'Toggle Fullscreen',
             x_slot *2,
+            y_slot,
+            width = 250
+        )
+
+        self.ui_manager.add_ui_element(button)
+
+        button = buttons.MusicButton(
+            game_view,
+            x_slot *3,
             y_slot,
             width = 250
         )
