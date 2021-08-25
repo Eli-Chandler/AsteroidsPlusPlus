@@ -111,6 +111,8 @@ class GameView(arcade.View):
         self.mars = planets.Mars(self.rocket, random.choice(x), random.choice(y))
         print(self.mars.center_x, self.mars.center_y)
 
+        self.earth.button_list.append(buttons.UpgradeButton('Mars location marker', 'show_edge_marker', self.mars, 30, cost_multiplier = 0, upgrade_step = 1))
+
         self.planet_list.append(self.earth)
         self.planet_list.append(self.mars)
         #self.planet_list.append(self.mars)
@@ -150,9 +152,12 @@ class GameView(arcade.View):
 
         self.coin_list.draw()
         
+        n = 0
         for edge_marker in self.edge_marker_list:
             if not self.rocket.at_base and edge_marker.check_visibility(current_screen_width, current_screen_height):
-                edge_marker.draw()
+                if self.planet_list[n].show_edge_marker:
+                    edge_marker.draw()
+            n+=1 
 
         for planet in self.planet_list:
             for button in planet.button_list:
@@ -177,6 +182,8 @@ class GameView(arcade.View):
 
 
     def on_update(self, delta_time):
+
+        self.mars.coins = self.rocket.coins
 
         self.play_music()
 
