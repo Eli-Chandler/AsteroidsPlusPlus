@@ -6,7 +6,7 @@ import buttons
 
 class Rocket(arcade.Sprite):
     def __init__(self, image):
-        super().__init__(image)
+        super().__init__(image, 0.25)
 
         self.invincible = False
         self.at_base = False

@@ -21,6 +21,8 @@ MOUSE_Y = 0
 
 USE_SPATIAL_HASHING = False
 
+won = False
+
 class GameView(arcade.View):
     def __init__(self):
         super().__init__()
@@ -61,6 +63,7 @@ class GameView(arcade.View):
         self.background = None
 
         self.coin_counter = None
+        self.lives_counter = None
 
         self.music = None
 
@@ -129,7 +132,8 @@ class GameView(arcade.View):
 
         self.position_buttons()
 
-        self.coin_counter = sprites.Counter(self.rocket, 'coins', -current_screen_width/2 + 50 , current_screen_height/2 - 50, 'sprites/coin/coin.png', 0.08)
+        self.coin_counter = sprites.Counter(self.rocket, 'coins', -current_screen_width/2 + 50 , current_screen_height/2 - 50, 'sprites/coin/gold.png', 1.5)
+        self.lives_counter = sprites.Counter(self.rocket, 'lives', -current_screen_width/2 + 50 , current_screen_height/2 - 100, 'sprites/rocket/still.png', 0.25)
 
         self.populate_spawn_asteroids()
 
@@ -178,6 +182,7 @@ class GameView(arcade.View):
         self.shoot_progress_bar.draw()
 
         self.coin_counter.draw()
+        self.lives_counter.draw()
 
         self.rocket.bullet_list.draw()
 
@@ -240,7 +245,7 @@ class GameView(arcade.View):
         for planet in self.planet_list:
             self.rocket.at_base = arcade.check_for_collision(self.rocket, planet)
 
-            if self.rocket.at_base and planet.name == 'mars':
+            if self.rocket.at_base and planet.name == 'mars' and won == False:
                 window.show_view(WinView())
 
             if self.rocket.at_base:
@@ -289,6 +294,7 @@ class GameView(arcade.View):
                 button.check_mouse(MOUSE_X, MOUSE_Y, self.rocket.center_x, self.rocket.center_y, self.rocket.at_base)
 
         self.coin_counter.update()
+        self.lives_counter.update()
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -319,8 +325,6 @@ class GameView(arcade.View):
 
     def position_buttons(self):
         for planet in self.planet_list:
-            print(planet)
-            print(planet.button_list)
             length = len(planet.button_list)
             space = 300
 
@@ -468,6 +472,7 @@ class WinView(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
+        arcade.set_viewport(0, current_screen_width - 1, 0, current_screen_height - 1)
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
 
@@ -504,6 +509,8 @@ class WinView(arcade.View):
 
     def on_show_view(self):
         self.setup()
+        global won
+        won = True
         arcade.set_viewport(0, current_screen_width - 1, 0, current_screen_height - 1)
 
 class LoseView(arcade.View):
