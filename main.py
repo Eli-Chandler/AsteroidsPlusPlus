@@ -236,10 +236,11 @@ class GameView(arcade.View):
 
         if asteroid_hit_list:
             if not self.rocket.invincible:
-                for asteroid in self.asteroid_list:
-                    self.asteroid_list.remove(asteroid)
-                self.populate_spawn_asteroids()
-                self.rocket.die()
+                if not self.rocket.at_base:
+                    for asteroid in self.asteroid_list:
+                        self.asteroid_list.remove(asteroid)
+                    self.populate_spawn_asteroids()
+                    self.rocket.die()
         
 
 
