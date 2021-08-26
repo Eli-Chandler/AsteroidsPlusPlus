@@ -43,6 +43,9 @@ class Rocket(arcade.Sprite):
 
         self.lives = 3
 
+        self.death_sound = arcade.Sound('sounds/loss.mp3', streaming=True)
+        self.shoot_sound = arcade.Sound('sounds/shoot.mp3', streaming=True)
+
     def update(self, delta_time, mouse_x, mouse_y):
 
 
@@ -50,7 +53,6 @@ class Rocket(arcade.Sprite):
             self.oxygen = self.max_oxygen
         
         self.oxygen -= delta_time
-
 
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
@@ -66,6 +68,9 @@ class Rocket(arcade.Sprite):
         if self.at_base:
             self.fuel = self.max_fuel
             self.oxygen = self.max_oxygen
+
+        if self.oxygen < 0:
+            self.die()
 
         mouse_x_relative = mouse_x - current_screen_width/2
         mouse_y_relative = mouse_y - current_screen_height/2
@@ -110,6 +115,8 @@ class Rocket(arcade.Sprite):
 
 
     def die(self):
+        '''Called when the rocket collides with an asteroid, resets the position and coins of the rocket and removes 1 life
+        also plays the rockets death sound'''
         self.center_x = 0
         self.center_y = 0
 
@@ -120,9 +127,15 @@ class Rocket(arcade.Sprite):
 
         self.lives -= 1
 
+        arcade.play_sound(self.death_sound)
+
     def shoot(self):
+        '''function to make the rocket shoot, the function first checks if the time since the last shot is greater than the shoot speed,
+        than creates a new bullet object and adds it to the rockets bullet list'''
         if self.last_shot < self.shoot_speed:
             return
+
+        arcade.play_sound(self.shoot_sound)
 
         self.delta_x -= -self.recoil * math.sin(self.radians)
         self.delta_y -= self.recoil * math.cos(self.radians)
@@ -133,6 +146,7 @@ class Rocket(arcade.Sprite):
         self.last_shot = 0
 
     def upgrade(self, attribute, step = 0, multiply = 1 ): #mode can be step or multiply depending on how we want to increase the attribute
+        '''Function used to upgrade attributes of the rocket, called by upgrade buttons on planets'''
         setattr(self, attribute, getattr(self, attribute) + step) #adds the step value to the attribute (if the step value is at default value of 0 there will be no change)
         setattr(self, attribute, getattr(self, attribute) * multiply) #multiplys the multiply value by the attribute (if the multiply value is at default of 1 there will be no change)
 
@@ -149,9 +163,6 @@ class Marker(arcade.Sprite):
         self.target = target
 
     def update(self):
-
-        
-
         self.center_x = self.origin.center_x
         self.center_y = self.origin.center_y
 
@@ -163,6 +174,7 @@ class Marker(arcade.Sprite):
         self.radians = math.atan2(relative_y, relative_x) - 1.5708
 
     def check_visibility(self, screen_width, screen_height):
+        '''Function to check if marker needs to be visible, i.e if planet of marker is on screen'''
         
         screen_width = 1280
         screen_height = 720
@@ -222,12 +234,17 @@ class Asteroid(arcade.Sprite):
         self.scale = random.uniform(ASTEROID_MIN_SIZE, ASTEROID_MAX_SIZE)
         self.angle = random.randint(0, 360)
 
+        self.explosion_sound = arcade.Sound('sounds/explosion.mp3', streaming = True)
+        self.pickup_sound = arcade.Sound('sounds/pickup.mp3', streaming = True)
+        self.increase_sound = arcade.Sound('sounds/increase.mp3', streaming = True)
+
     def update(self):
         self.angle += self.rotation_speed
         self.center_x += self.delta_x
         self.center_y += self.delta_y
 
     def shot(self):
+        '''Function called when asteroid is shot, currently unused but could be useful if we want certain events to happen when an asteroid is shot'''
         if self.type == 'brown':
             pass
             # delete asteroid
@@ -238,7 +255,7 @@ class Asteroid(arcade.Sprite):
             pass
             # drop fuel
 
-EXPLOSION_MAX_AGE = 0.5
+EXPLOSION_MAX_AGE = 0.5 # Constant defining max age of explosions in seconds
 class Explosion(arcade.Sprite):
     def __init__(self, obj, EXPLOSION_MAX_AGE = EXPLOSION_MAX_AGE):
         scale = obj.scale

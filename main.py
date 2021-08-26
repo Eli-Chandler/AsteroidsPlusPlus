@@ -114,7 +114,6 @@ class GameView(arcade.View):
         x = [random.randint(4000, 5000), random.randint(-5000, -4000)]
         y = [random.randint(4000, 5000), random.randint(-5000, -4000)]
         self.mars = planets.Mars(self.rocket, random.choice(x), random.choice(y))
-        print(self.mars.center_x, self.mars.center_y)
 
         self.earth.button_list.append(buttons.UpgradeButton('Mars location', 'show_edge_marker', self.mars, 30, cost_multiplier = 0, upgrade_step = 1))
 
@@ -189,6 +188,18 @@ class GameView(arcade.View):
 
 
     def on_update(self, delta_time):
+        
+        for planet in self.planet_list:
+            planet_hit_list = arcade.check_for_collision_with_list(planet, self.asteroid_list)
+
+            #if planet_hit_list:
+                #if planet.name == 'mars':
+                   # window.show_view(MenuView())
+
+            for asteroid in planet_hit_list:
+                self.explosion_list.append(sprites.Explosion(asteroid))
+                arcade.play_sound(asteroid.explosion_sound)
+                asteroid.kill()
 
         if self.rocket.lives <= 0:
             window.show_view(LoseView())
@@ -230,16 +241,7 @@ class GameView(arcade.View):
                 self.populate_spawn_asteroids()
                 self.rocket.die()
         
-        for planet in self.planet_list:
-            planet_hit_list = arcade.check_for_collision_with_list(planet, self.asteroid_list)
 
-            #if planet_hit_list:
-                #if planet.name == 'mars':
-                   # window.show_view(MenuView())
-
-            for asteroid in planet_hit_list:
-                self.explosion_list.append(sprites.Explosion(asteroid))
-                asteroid.kill()
 
 
         for planet in self.planet_list:
@@ -269,10 +271,15 @@ class GameView(arcade.View):
                     self.explosion_list.append(sprites.Explosion(asteroid))
                     if asteroid.type == 'coin':
                         self.rocket.coins += 5
+                        arcade.play_sound(asteroid.pickup_sound)
                     elif asteroid.type == 'fuel':
                         self.rocket.fuel = self.rocket.max_fuel
+                        arcade.play_sound(asteroid.increase_sound)
                     elif asteroid.type == 'time':
                         self.rocket.oxygen += 10
+                        arcade.play_sound(asteroid.increase_sound)
+                    else:
+                        arcade.play_sound(asteroid.explosion_sound)
                     asteroid.kill()
 
         self.edge_marker_list.update()
@@ -472,12 +479,23 @@ class WinView(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
+
+        current_screen_width = arcade.get_window().width
+        current_screen_height = arcade.get_window().height
+
         arcade.set_viewport(0, current_screen_width - 1, 0, current_screen_height - 1)
+
+
+
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
 
         self.background_sprite.draw()
         self.victory_sprite.draw()
+
+        self.background_sprite.center_x = current_screen_width/2
+        self.background_sprite.center_y = current_screen_width/2
+
         arcade.draw_text('Thats all the content in the game for now, feel free to continue in free play by pressing this button!', x_slot, y_slot * 2, arcade.color.GREEN)
         
 
@@ -522,14 +540,24 @@ class LoseView(arcade.View):
 
 
     def on_draw(self):
+        current_screen_width = arcade.get_window().width
+        current_screen_height = arcade.get_window().height
 
         arcade.set_viewport(0, current_screen_width - 1, 0, current_screen_height - 1)
         arcade.start_render()
+
+
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
 
         self.background_sprite.draw()
         self.lose_sprite.draw()
+
+
+        self.background_sprite.center_x = x_slot* 2
+        self.background_sprite.center_y = y_slot * 2
+
+
         arcade.draw_text('You lost!', x_slot, y_slot * 2, arcade.color.RED)
         
 
@@ -546,7 +574,7 @@ class LoseView(arcade.View):
 
 
         button = buttons.ChangeViewButton(
-            'Play',
+            'Play Again',
             x_slot,
             y_slot,
             game_view,
@@ -606,6 +634,16 @@ class MenuView(arcade.View):
 
         self.ui_manager.add_ui_element(button)
 
+        button = buttons.ChangeViewButton(
+            'Tutorial',
+            x_slot*3,
+            y_slot*2,
+            TutorialView(),
+            width = 250
+        )
+
+        self.ui_manager.add_ui_element(button)
+
         button = buttons.FullScreenButton(
             'Toggle Fullscreen',
             x_slot *2,
@@ -623,7 +661,68 @@ class MenuView(arcade.View):
         )
 
         self.ui_manager.add_ui_element(button)
-        
+
+class TutorialView(arcade.View):
+    def __init__(self):
+        super().__init__()
+
+        self.ui_manager = UIManager()
+
+    def on_draw(self):
+        arcade.start_render()
+
+
+        self.background_sprite.draw()
+        self.tutorial.draw()
+
+        current_screen_width = arcade.get_window().width
+        current_screen_height = arcade.get_window().height
+
+        arcade.set_viewport(0, current_screen_width - 1, 0, current_screen_height - 1)
+
+        self.tutorial.center_x = current_screen_width/2
+        self.tutorial.center_y = current_screen_height/2
+
+        self.background_sprite.center_x = current_screen_width/2
+        self.background_sprite.center_y = current_screen_height/2
+
+    def on_show_view(self):
+        self.setup()
+        arcade.set_background_color(arcade.color.BLACK)
+        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+
+
+
+
+
+    def on_hide_view(self):
+        self.ui_manager.unregister_handlers()
+
+
+    def setup(self):
+        self.ui_manager.purge_ui_elements()
+
+        y_slot = SCREEN_HEIGHT // 4
+        x_slot = SCREEN_WIDTH // 4
+
+
+        self.tutorial = arcade.Sprite('sprites/menu/tutorial.png', 1, center_x = x_slot * 2, center_y = y_slot * 2)
+        self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1)
+        self.background_sprite.center_x = 1280/2
+        self.background_sprite.center_y = 720/2
+
+        button = buttons.ChangeViewButton(
+            'Back',
+            x_slot,
+            y_slot,
+            MenuView(),
+            width = 250
+        )
+
+        self.ui_manager.add_ui_element(button)
+
+
+
 
 
 class MyGame(arcade.Window):
@@ -639,7 +738,6 @@ class MyGame(arcade.Window):
     def on_resize(self, width, height):
         global current_screen_width, current_screen_height
         current_screen_width, current_screen_height = self.get_size()
-
 
 if __name__ == '__main__':
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, 'Asteroids++')
