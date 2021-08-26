@@ -46,6 +46,8 @@ class Rocket(arcade.Sprite):
         self.death_sound = arcade.Sound('sounds/loss.mp3', streaming=True)
         self.shoot_sound = arcade.Sound('sounds/shoot.mp3', streaming=True)
 
+        self.show_edge_marker_marker = False
+
     def update(self, delta_time, mouse_x, mouse_y):
 
 
