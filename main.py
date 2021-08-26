@@ -115,7 +115,7 @@ class GameView(arcade.View):
         y = [random.randint(4000, 5000), random.randint(-5000, -4000)]
         self.mars = planets.Mars(self.rocket, random.choice(x), random.choice(y))
 
-        self.earth.button_list.append(buttons.UpgradeButton('Mars location', 'show_edge_marker_mars', self.rocket, 30, cost_multiplier = 1, upgrade_step = 1))
+        self.earth.button_list.append(buttons.UpgradeButton('Mars location', 'show_edge_marker_mars', self.rocket, 30, cost_multiplier = 0, upgrade_step = 1))
 
         self.planet_list.append(self.earth)
         self.planet_list.append(self.mars)
@@ -137,6 +137,8 @@ class GameView(arcade.View):
         self.populate_spawn_asteroids()
 
         self.frame_rate_list = []
+
+        self.rocket.lives = 3
 
     def play_music(self):
         if not self.music.is_playing(self.music_player):
