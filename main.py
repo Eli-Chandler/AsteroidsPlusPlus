@@ -206,7 +206,7 @@ class GameView(arcade.View):
                 bullet.kill()
 
         self.coin_list.update()
-        self.populate_coins()
+        #self.populate_coins()
 
         self.planet_list.update()
 
@@ -263,11 +263,11 @@ class GameView(arcade.View):
                 for asteroid in bullet_hit_list:
                     self.explosion_list.append(sprites.Explosion(asteroid))
                     if asteroid.type == 'coin':
-                        self.rocket.coins += 1
+                        self.rocket.coins += 5
                     elif asteroid.type == 'fuel':
                         self.rocket.fuel = self.rocket.max_fuel
                     elif asteroid.type == 'time':
-                        self.rocket.oxygen += 5
+                        self.rocket.oxygen += 10
                     asteroid.kill()
 
         self.edge_marker_list.update()
