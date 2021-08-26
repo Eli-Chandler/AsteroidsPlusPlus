@@ -202,7 +202,9 @@ class GameView(arcade.View):
                 asteroid.kill()
 
         if self.rocket.lives <= 0:
+            self.rocket.lives = 3
             window.show_view(LoseView())
+            
 
         
         self.mars.coins = self.rocket.coins
@@ -229,21 +231,6 @@ class GameView(arcade.View):
         self.rocket.update(delta_time, MOUSE_X, MOUSE_Y)
 
         self.asteroid_list.update()
-
-        asteroid_hit_list = arcade.check_for_collision_with_list(self.rocket, self.asteroid_list)
-
-
-
-        if asteroid_hit_list:
-            if not self.rocket.invincible:
-                if not self.rocket.at_base:
-                    for asteroid in self.asteroid_list:
-                        self.asteroid_list.remove(asteroid)
-                    self.populate_spawn_asteroids()
-                    self.rocket.die()
-        
-
-
 
         for planet in self.planet_list:
             self.rocket.at_base = arcade.check_for_collision(self.rocket, planet)
@@ -303,6 +290,18 @@ class GameView(arcade.View):
 
         self.coin_counter.update()
         self.lives_counter.update()
+
+        asteroid_hit_list = arcade.check_for_collision_with_list(self.rocket, self.asteroid_list)
+
+
+
+        if asteroid_hit_list:
+            if not self.rocket.invincible:
+                if not self.rocket.at_base:
+                    for asteroid in self.asteroid_list:
+                        self.asteroid_list.remove(asteroid)
+                    self.populate_spawn_asteroids()
+                    self.rocket.die()
 
     def on_mouse_press(self, x, y, button, modifiers):
         if button == arcade.MOUSE_BUTTON_LEFT:
