@@ -1,3 +1,9 @@
+'''
+Credits:
+Sound effects made with Leshy FXMaker https://www.leshylabs.com/apps/sfMaker/
+Explosion Animation Sprite made by PNGWing https://w7.pngwing.com/pngs/879/232/png-transparent-sprite-gamemaker-studio-animation-2d-computer-graphics-explosion-sprite-text-orange-2d-computer-graphics.png
+'''
+
 import logging
 import arcade
 import arcade.gui
