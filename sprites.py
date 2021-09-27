@@ -260,12 +260,13 @@ class Asteroid(arcade.Sprite):
 EXPLOSION_MAX_AGE = 0.5 # Constant defining max age of explosions in seconds
 class Explosion(arcade.Sprite):
     def __init__(self, obj, EXPLOSION_MAX_AGE = EXPLOSION_MAX_AGE):
-        scale = obj.scale
-        image = 'sprites/explosion/explosion0.png'
+        scale = obj.scale * 1.7
+        image = 'sprites/explosion/explosion1_new.png'
         super().__init__(image,scale)
 
         self.center_x = obj.center_x
         self.center_y = obj.center_y
+        self.angle = random.randint(0,360)
         try:
             self.delta_x = obj.delta_x
         except: pass
@@ -279,12 +280,12 @@ class Explosion(arcade.Sprite):
         self.current_texture = 0
 
         self.texture_list = [
-            'explosion0.png',
-            'explosion2.png',
-            'explosion3.png',
-            'explosion4.png',
-            'explosion5.png',
-            'explosion6.png',
+            'explosion0_new.png',
+            'explosion2_new.png',
+            'explosion3_new.png',
+            'explosion4_new.png',
+            'explosion5_new.png',
+            'explosion6_new.png',
         ]
 
         self.texture = arcade.sprite.load_texture(f'sprites/explosion/{self.texture_list[0]}')
