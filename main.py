@@ -64,8 +64,6 @@ class GameView(arcade.View):
 
         self.planet_list = None
 
-
-
     def setup(self):
         '''Can be called to reset the game back to its original states - resets all variables to default value'''
 
@@ -514,7 +512,7 @@ class GameView(arcade.View):
     def on_mouse_motion(self, x, y, dx, dy):
         # Function called when mouse is moved
         global MOUSE_X, MOUSE_Y
-        MOUSE_X = x # Sets global MOUSE_X variable to current mouse x position for use in other calculations
+        MOUSE_X = x  # Sets global MOUSE_X variable to current mouse x position for use in other calculations
         MOUSE_Y = y
 
 
@@ -533,10 +531,11 @@ class WinView(arcade.View):
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
 
-        arcade.set_viewport(0, current_screen_width - 1, 
-                            0, current_screen_height - 1) #Resets viewport to default
+        arcade.set_viewport(0, current_screen_width - 1,
+                            0, current_screen_height - 1)  # Resets viewport to default
 
-        y_slot = SCREEN_HEIGHT // 4 # Used to position elemenets in 4 x and y slots on the screen
+        # Used to position elemenets in 4 x and y slots on the screen
+        y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
 
         self.background_sprite.draw()
@@ -580,14 +579,15 @@ class WinView(arcade.View):
         self.ui_manager.add_ui_element(button)
 
     def on_hide_view(self):
-        self.ui_manager.unregister_handlers() # Get rid of buttons when the view is hidden
+        # Get rid of buttons when the view is hidden
+        self.ui_manager.unregister_handlers()
 
     def on_show_view(self):
         self.setup()
         global won
         won = True
         arcade.set_viewport(0, current_screen_width - 1,
-                            0, current_screen_height - 1) # Reset viewport
+                            0, current_screen_height - 1)  # Reset viewport
 
 
 class LoseView(arcade.View):
@@ -604,7 +604,7 @@ class LoseView(arcade.View):
         current_screen_height = arcade.get_window().height
 
         arcade.set_viewport(0, current_screen_width - 1,
-                            0, current_screen_height - 1) # Reset viewport
+                            0, current_screen_height - 1)  # Reset viewport
         arcade.start_render()
 
         y_slot = SCREEN_HEIGHT // 4
@@ -792,7 +792,8 @@ class MyGame(arcade.Window):
 
     def on_resize(self, width, height):
         global current_screen_width, current_screen_height
-        current_screen_width, current_screen_height = self.get_size() # gets new window size and defines globally so elements can be repositioned
+        # gets new window size and defines globally so elements can be repositioned
+        current_screen_width, current_screen_height = self.get_size()
 
 
 if __name__ == '__main__':

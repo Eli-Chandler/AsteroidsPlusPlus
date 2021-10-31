@@ -6,6 +6,7 @@ import buttons
 
 class Rocket(arcade.Sprite):
     '''Class for rocket object - the object that the player controls in the game'''
+
     def __init__(self, image):
         super().__init__(image, 0.25)
 
@@ -74,10 +75,12 @@ class Rocket(arcade.Sprite):
 
         mouse_x_relative = mouse_x - current_screen_width / 2
         mouse_y_relative = mouse_y - current_screen_height / 2
-        self.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708 # Sets direction of sprite to point towards mouse from center of the screen
+        # Sets direction of sprite to point towards mouse from center of the screen
+        self.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708
 
-        self.velocity_radians = math.atan2(self.delta_y, self.delta_x) - 1.5708 # Finds direction of rocket in radians
-        if self.damping: # If right click is held the rocket will slow down through dampers, dampers are not mouse position dependent
+        # Finds direction of rocket in radians
+        self.velocity_radians = math.atan2(self.delta_y, self.delta_x) - 1.5708
+        if self.damping:  # If right click is held the rocket will slow down through dampers, dampers are not mouse position dependent
             if self.delta_x > 0:
 
                 change = self.delta_x * \
@@ -174,6 +177,7 @@ class Rocket(arcade.Sprite):
 
 class Marker(arcade.Sprite):
     '''Sprite that points towards its target at all times, centered around the rocket'''
+
     def __init__(self, origin, target):
         scale = 1
         image = f'sprites/planets/edge marker_{target.name}.png'
@@ -211,6 +215,7 @@ class Marker(arcade.Sprite):
 
 class Bullet(arcade.Sprite):
     '''Class to create rockets bullets, they will explode on contact with asteroids or after a certain amount of time'''
+
     def __init__(self, center_x, center_y, delta_x, delta_y, angle, max_age):
         image = 'sprites/bomb.png'
         scale = 0.3
@@ -243,6 +248,7 @@ ASTEROID_MAX_ROTATION_SPEED = 1
 
 class Asteroid(arcade.Sprite):
     '''Class to create randomly generated asteroid at a certain position and of a ceratin type'''
+
     def __init__(self, center_x, center_y, type='brown'):
         self.type = type
         image = f'sprites/asteroids/{self.type}_asteroid.png'
@@ -293,6 +299,7 @@ EXPLOSION_MAX_AGE = 0.5  # Constant defining max age of explosions in seconds
 
 class Explosion(arcade.Sprite):
     '''Class to create explosion sprite, animation will play at different speed depending on EXPLOSION_MAX_AGE (Default value = 0.5)'''
+
     def __init__(self, obj, EXPLOSION_MAX_AGE=EXPLOSION_MAX_AGE):
         scale = obj.scale * 1.7
         image = 'sprites/explosion/explosion1_new.png'
@@ -351,6 +358,7 @@ class Explosion(arcade.Sprite):
 
 class Coin(arcade.Sprite):
     '''Class for sprites of coins, used to draw coins on the screen'''
+
     def __init__(self, center_x, center_y, scale):
         image = 'sprites/coin/coin.png'
         super().__init__(image, scale)
@@ -361,6 +369,7 @@ class Coin(arcade.Sprite):
 
 class ProgressBar(arcade.Sprite):
     '''Bar drawn at the bottom of the screen to represent how close a certain value is to 100% of its maximum value'''
+
     def __init__(self, height, color):
         scale = 1
         image = f'sprites/bars/{color}.png'
@@ -380,6 +389,7 @@ class ProgressBar(arcade.Sprite):
 
 class Background(arcade.Sprite):
     '''Background object, makes the star background move slightly offset to the movement of the rocket'''
+
     def __init__(self, parent):
         scale = 1
         image = f'sprites/backgrounds/space background.png'
@@ -395,6 +405,7 @@ class Background(arcade.Sprite):
 
 class Counter(arcade.Sprite):
     '''Class to show a thumbnail sprite and its current value i.e number of coins or lives'''
+
     def __init__(self, parent, count, offset_x, offset_y, image, scale=1):
         super().__init__(image, scale)
 
@@ -426,6 +437,7 @@ class Counter(arcade.Sprite):
 
 class Planet(arcade.Sprite):
     '''Planet sprite class button list can be specified to add upgrade buttons on the specific planet'''
+
     def __init__(self, name, rocket, image, scale):
         super().__init__(image, scale)
         self.name = name

@@ -4,6 +4,7 @@ from arcade.gui import UIManager
 
 class ChangeViewButton(arcade.gui.UIFlatButton):
     '''Button used to switch to another specified view'''
+
     def __init__(self, text, center_x, center_y, view, width=100, height=100):
         super().__init__(text, center_x, center_y, width, height)
 
@@ -17,6 +18,7 @@ class ChangeViewButton(arcade.gui.UIFlatButton):
 
 class MusicButton(arcade.gui.UIFlatButton):
     '''Button used to toggle music on and off'''
+
     def __init__(self, view, center_x, center_y, width=100, height=100):
 
         text = 'Toggle Music'
@@ -30,6 +32,7 @@ class MusicButton(arcade.gui.UIFlatButton):
 
 class FullScreenButton(arcade.gui.UIFlatButton):
     '''Button used to toggle fullscreen on and off'''
+
     def __init__(self, text, center_x, center_y, width=100, height=100):
         super().__init__(text, center_x, center_y, width, height)
 
@@ -42,6 +45,7 @@ class FullScreenButton(arcade.gui.UIFlatButton):
 
 class ToggleAttributeButton(arcade.gui.UIFlatButton):
     '''Used to toggle the value of a specific attribute in a view from true to false or false to true'''
+
     def __init__(
             self,
             text,
@@ -69,6 +73,7 @@ class UpgradeButton():
     '''Custom button class used to upgrade a specific attribute of the subject, increase in cost of the upgrade can either
     be increased by a fixed step with upgrade_step or a multiplier with upgrade_multiplier (leave as default value if one is unused). 
     Upgrade buttons should go inside a planet button list'''
+
     def __init__(
             self,
             text,
