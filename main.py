@@ -244,7 +244,7 @@ class GameView(arcade.View):
             self.rocket.at_base = arcade.check_for_collision(
                 self.rocket, planet)
 
-            if self.rocket.at_base and planet.name == 'mars' and won == False:
+            if self.rocket.at_base and planet.name == 'mars' and not won:
                 window.show_view(WinView())
 
             if self.rocket.at_base:
@@ -485,7 +485,7 @@ class GameView(arcade.View):
                     center_x, center_y, type=type))
 
     def populate_coins(self):
-        '''Function used to populate coins around the map, 
+        '''Function used to populate coins around the map,
         the farther from the center of the world the more
         coins will spawn'''
         chunk_x = round(self.rocket.center_x / 1000)
@@ -566,7 +566,7 @@ class WinView(arcade.View):
         self.background_sprite.center_x = 1280 / 2
         self.background_sprite.center_y = 720 / 2
 
-        #self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1, 1280/2, 720/2)
+        # self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1, 1280/2, 720/2)
 
         button = buttons.ChangeViewButton(
             'Play',
@@ -632,7 +632,7 @@ class LoseView(arcade.View):
         self.background_sprite.center_x = 1280 / 2
         self.background_sprite.center_y = 720 / 2
 
-        #self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1, 1280/2, 720/2)
+        # self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1, 1280/2, 720/2)
 
         button = buttons.ChangeViewButton(
             'Play Again',

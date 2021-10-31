@@ -71,7 +71,7 @@ class ToggleAttributeButton(arcade.gui.UIFlatButton):
 
 class UpgradeButton():
     '''Custom button class used to upgrade a specific attribute of the subject, increase in cost of the upgrade can either
-    be increased by a fixed step with upgrade_step or a multiplier with upgrade_multiplier (leave as default value if one is unused). 
+    be increased by a fixed step with upgrade_step or a multiplier with upgrade_multiplier (leave as default value if one is unused).
     Upgrade buttons should go inside a planet button list'''
 
     def __init__(

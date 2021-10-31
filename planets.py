@@ -3,6 +3,7 @@ import buttons
 
 
 class Earth(sprites.Planet):
+    '''Class for earth, child of sprites.Planet class'''
     def __init__(self, rocket, center_x, center_y):
         super().__init__('earth', rocket, 'sprites/planets/earth.png', 1)
         self.center_x = center_x
@@ -69,6 +70,7 @@ class Mars(sprites.Planet):
     # mode can be step or multiply depending on how we want to increase the
     # attribute
     def upgrade(self, attribute, step=0, multiply=1):
+        '''Upgrade function for mars, allows the planet marker to be made visible through an UpgradeButton'''
         # adds the step value to the attribute (if the step value is at default
         # value of 0 there will be no change)
         setattr(self, attribute, getattr(self, attribute) + step)
