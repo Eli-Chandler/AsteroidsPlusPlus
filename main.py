@@ -32,54 +32,42 @@ won = False
 
 class GameView(arcade.View):
     def __init__(self):
+        '''Initializes all variables for the game'''
         super().__init__()
 
-        self.asteroids_list = None
-
         self.rocket = None
-
         self.rocket_list = None
-
-        self.asteroid_list = None
-
-        self.explosion_list = None
-
         self.dead = None
 
+        self.asteroid_list = None
+        self.explosion_list = None
+
         self.coin_list = None
-
         self.existing_chunks = None
-
         self.BASE_ASTEROID_COUNT = None
 
         self.score = None
 
         self.ui_manager = UIManager()
-
-        self.score = None
-
         self.edge_marker_list = None
-
         self.fuel_progress_bar = None
-
         self.oxygen_progress_bar = None
-
         self.shoot_progress_bar = None
-
-        self.background = None
-
         self.coin_counter = None
         self.lives_counter = None
 
-        self.music = None
+        self.background = None
 
+        self.music = None
         self.music_player = None
+        self.music_enabled = True
 
         self.planet_list = None
 
-        self.music_enabled = True
+
 
     def setup(self):
+        '''Can be called to reset the game back to its original states - resets all variables to default value'''
 
         self.music = arcade.Sound('music.mp3', streaming=True)
         self.music_player = self.music.play()
@@ -166,11 +154,13 @@ class GameView(arcade.View):
         self.rocket.lives = 3
 
     def play_music(self):
+        '''If music is not currently playing the function will start music, called in update() function'''
         if not self.music.is_playing(self.music_player):
             self.music = arcade.Sound('music.mp3', streaming=True)
             self.music_player = self.music.play()
 
     def on_draw(self):
+        # Parent function, called every frame of the game used to draw elements onto the screen
 
         arcade.start_render()
 
@@ -208,6 +198,7 @@ class GameView(arcade.View):
         self.rocket.bullet_list.draw()
 
     def on_update(self, delta_time):
+        # Parent function, called on every update of the game - used to update positions, velocities etc.
 
         for planet in self.planet_list:
             planet_hit_list = arcade.check_for_collision_with_list(
@@ -342,6 +333,7 @@ class GameView(arcade.View):
                     self.rocket.die()
 
     def on_mouse_press(self, x, y, button, modifiers):
+        # Parent function, called when a mouse button is pressed
         if button == arcade.MOUSE_BUTTON_LEFT:
             button_ = False
             for planet in self.planet_list:
@@ -356,18 +348,21 @@ class GameView(arcade.View):
             self.rocket.damping = True
 
     def on_key_press(self, key, modifiers):
+        # Parent function, called when a keyboard key is pressed
         if key == arcade.key.SPACE:
             self.rocket.shoot()
         if key == arcade.key.ESCAPE:
             window.show_view(MenuView())
 
     def on_mouse_release(self, x, y, button, modifiers):
+        # Parent function, called when a mouse button is released
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.rocket.thrusting = False
         if button == arcade.MOUSE_BUTTON_RIGHT:
             self.rocket.damping = False
 
     def position_buttons(self):
+        '''Positions buttons around buttons in self.planet list, but only if the rocket is touching that planet'''
         for planet in self.planet_list:
             length = len(planet.button_list)
             space = 300
@@ -383,6 +378,7 @@ class GameView(arcade.View):
                 n += 1
 
     def on_show_view(self):
+        # Parent function, called when view is shown
         self.ui_manager.purge_ui_elements()
         arcade.set_viewport(
             self.rocket.center_x - SCREEN_WIDTH / 2,
@@ -396,6 +392,7 @@ class GameView(arcade.View):
         x_slot = SCREEN_WIDTH // 4
 
     def get_exterior_coords(self):
+        '''Function to get coordinates of screen edge, can be used for calculations of what is on screen'''
 
         # Get coordinates of screen edge
         left = self.rocket.center_x - SCREEN_WIDTH / 2
@@ -407,6 +404,7 @@ class GameView(arcade.View):
         return left, right, top, bottom
 
     def populate_spawn_asteroids(self):
+        '''Function called in setup() to fill the screen with asteroids on spawn, should only be called once'''
         left, right, top, bottom = [int(i) for i in self.get_exterior_coords()]
 
         n = 0
@@ -445,6 +443,8 @@ class GameView(arcade.View):
                     center_x, center_y, type=type))
 
     def populate_asteroids(self):
+        '''Function called in update() to fill the screen with asteroids,
+        when one asteroid goes off the screen it will be deleted and another will be added'''
 
         left, right, top, bottom = [int(i) for i in self.get_exterior_coords()]
 
@@ -487,6 +487,9 @@ class GameView(arcade.View):
                     center_x, center_y, type=type))
 
     def populate_coins(self):
+        '''Function used to populate coins around the map, 
+        the farther from the center of the world the more
+        coins will spawn'''
         chunk_x = round(self.rocket.center_x / 1000)
         chunk_y = round(self.rocket.center_y / 1000)
 
@@ -509,28 +512,31 @@ class GameView(arcade.View):
                     self.coin_list.append(sprites.Coin(coin_x, coin_y, 0.05))
 
     def on_mouse_motion(self, x, y, dx, dy):
+        # Function called when mouse is moved
         global MOUSE_X, MOUSE_Y
-        MOUSE_X = x
+        MOUSE_X = x # Sets global MOUSE_X variable to current mouse x position for use in other calculations
         MOUSE_Y = y
 
 
 class WinView(arcade.View):
     def __init__(self):
+        '''Initializes all variables used in the win view'''
         super().__init__()
 
         self.ui_manager = UIManager()
         self.background_sprite = None
 
     def on_draw(self):
+        # Parent function, called on each frame of the game, used to draw elements onto the screen
         arcade.start_render()
 
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
 
-        arcade.set_viewport(0, current_screen_width - 1,
-                            0, current_screen_height - 1)
+        arcade.set_viewport(0, current_screen_width - 1, 
+                            0, current_screen_height - 1) #Resets viewport to default
 
-        y_slot = SCREEN_HEIGHT // 4
+        y_slot = SCREEN_HEIGHT // 4 # Used to position elemenets in 4 x and y slots on the screen
         x_slot = SCREEN_WIDTH // 4
 
         self.background_sprite.draw()
@@ -547,6 +553,7 @@ class WinView(arcade.View):
             arcade.color.GREEN)
 
     def setup(self):
+        '''Setup function, used to reset the winview if it needs to be called again'''
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
         self.victory_sprite = arcade.Sprite(
@@ -573,29 +580,31 @@ class WinView(arcade.View):
         self.ui_manager.add_ui_element(button)
 
     def on_hide_view(self):
-        self.ui_manager.unregister_handlers()
+        self.ui_manager.unregister_handlers() # Get rid of buttons when the view is hidden
 
     def on_show_view(self):
         self.setup()
         global won
         won = True
         arcade.set_viewport(0, current_screen_width - 1,
-                            0, current_screen_height - 1)
+                            0, current_screen_height - 1) # Reset viewport
 
 
 class LoseView(arcade.View):
     def __init__(self):
+        '''Function to initialize all variables used in the lose view'''
         super().__init__()
 
         self.ui_manager = UIManager()
         self.background_sprite = None
 
     def on_draw(self):
+        # Parent function called on each frame of the game
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
 
         arcade.set_viewport(0, current_screen_width - 1,
-                            0, current_screen_height - 1)
+                            0, current_screen_height - 1) # Reset viewport
         arcade.start_render()
 
         y_slot = SCREEN_HEIGHT // 4
@@ -783,10 +792,11 @@ class MyGame(arcade.Window):
 
     def on_resize(self, width, height):
         global current_screen_width, current_screen_height
-        current_screen_width, current_screen_height = self.get_size()
+        current_screen_width, current_screen_height = self.get_size() # gets new window size and defines globally so elements can be repositioned
 
 
 if __name__ == '__main__':
+    # Only runs if run directly, not imported
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, 'Asteroids++')
     game_view = GameView()
     game_view.setup()

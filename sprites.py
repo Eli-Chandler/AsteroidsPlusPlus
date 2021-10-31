@@ -5,6 +5,7 @@ import buttons
 
 
 class Rocket(arcade.Sprite):
+    '''Class for rocket object - the object that the player controls in the game'''
     def __init__(self, image):
         super().__init__(image, 0.25)
 
@@ -49,6 +50,7 @@ class Rocket(arcade.Sprite):
         self.show_edge_marker_mars = False
 
     def update(self, delta_time, mouse_x, mouse_y):
+        '''Called every update of the game, used to check rocket oxygen, value, process movement'''
 
         if self.oxygen >= self.max_oxygen:
             self.oxygen = self.max_oxygen
@@ -72,10 +74,10 @@ class Rocket(arcade.Sprite):
 
         mouse_x_relative = mouse_x - current_screen_width / 2
         mouse_y_relative = mouse_y - current_screen_height / 2
-        self.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708
+        self.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708 # Sets direction of sprite to point towards mouse from center of the screen
 
-        self.velocity_radians = math.atan2(self.delta_y, self.delta_x) - 1.5708
-        if self.damping:
+        self.velocity_radians = math.atan2(self.delta_y, self.delta_x) - 1.5708 # Finds direction of rocket in radians
+        if self.damping: # If right click is held the rocket will slow down through dampers, dampers are not mouse position dependent
             if self.delta_x > 0:
 
                 change = self.delta_x * \
@@ -171,6 +173,7 @@ class Rocket(arcade.Sprite):
 
 
 class Marker(arcade.Sprite):
+    '''Sprite that points towards its target at all times, centered around the rocket'''
     def __init__(self, origin, target):
         scale = 1
         image = f'sprites/planets/edge marker_{target.name}.png'
@@ -183,6 +186,7 @@ class Marker(arcade.Sprite):
         self.target = target
 
     def update(self):
+        '''Updates postion of marker'''
         self.center_x = self.origin.center_x
         self.center_y = self.origin.center_y
 
@@ -192,7 +196,7 @@ class Marker(arcade.Sprite):
         self.radians = math.atan2(relative_y, relative_x) - 1.5708
 
     def check_visibility(self, screen_width, screen_height):
-        '''Function to check if marker needs to be visible, i.e if planet of marker is on screen'''
+        '''Function to check if marker needs to be visible, i.e if planet of marker is on screen it won't be drawn'''
 
         screen_width = 1280
         screen_height = 720
@@ -206,6 +210,7 @@ class Marker(arcade.Sprite):
 
 
 class Bullet(arcade.Sprite):
+    '''Class to create rockets bullets, they will explode on contact with asteroids or after a certain amount of time'''
     def __init__(self, center_x, center_y, delta_x, delta_y, angle, max_age):
         image = 'sprites/bomb.png'
         scale = 0.3
@@ -223,6 +228,7 @@ class Bullet(arcade.Sprite):
         self.max_age = max_age
 
     def update(self, delta_time):
+        '''Updates position and age of the bullet'''
         self.center_x += self.delta_x * delta_time
         self.center_y += self.delta_y * delta_time
 
@@ -236,6 +242,7 @@ ASTEROID_MAX_ROTATION_SPEED = 1
 
 
 class Asteroid(arcade.Sprite):
+    '''Class to create randomly generated asteroid at a certain position and of a ceratin type'''
     def __init__(self, center_x, center_y, type='brown'):
         self.type = type
         image = f'sprites/asteroids/{self.type}_asteroid.png'
@@ -263,6 +270,7 @@ class Asteroid(arcade.Sprite):
             'sounds/increase.mp3', streaming=True)
 
     def update(self):
+        '''Updates position and rotation of asteroid'''
         self.angle += self.rotation_speed
         self.center_x += self.delta_x
         self.center_y += self.delta_y
@@ -284,6 +292,7 @@ EXPLOSION_MAX_AGE = 0.5  # Constant defining max age of explosions in seconds
 
 
 class Explosion(arcade.Sprite):
+    '''Class to create explosion sprite, animation will play at different speed depending on EXPLOSION_MAX_AGE (Default value = 0.5)'''
     def __init__(self, obj, EXPLOSION_MAX_AGE=EXPLOSION_MAX_AGE):
         scale = obj.scale * 1.7
         image = 'sprites/explosion/explosion1_new.png'
@@ -324,6 +333,7 @@ class Explosion(arcade.Sprite):
         self.current_frame_time = self.anim_frame_time
 
     def update(self, delta_time):
+        '''Update function for Explosion, checks if current age is greater than max age and removes self if so'''
         self.center_x += self.delta_x * delta_time
         self.center_y += self.delta_y * delta_time
 
@@ -340,6 +350,7 @@ class Explosion(arcade.Sprite):
 
 
 class Coin(arcade.Sprite):
+    '''Class for sprites of coins, used to draw coins on the screen'''
     def __init__(self, center_x, center_y, scale):
         image = 'sprites/coin/coin.png'
         super().__init__(image, scale)
@@ -349,6 +360,7 @@ class Coin(arcade.Sprite):
 
 
 class ProgressBar(arcade.Sprite):
+    '''Bar drawn at the bottom of the screen to represent how close a certain value is to 100% of its maximum value'''
     def __init__(self, height, color):
         scale = 1
         image = f'sprites/bars/{color}.png'
@@ -358,7 +370,7 @@ class ProgressBar(arcade.Sprite):
         self.y_height = height
 
     def update(self, center_x, center_y, percentage):
-
+        '''Positions bar to be current value/max'''
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
 
@@ -367,6 +379,7 @@ class ProgressBar(arcade.Sprite):
 
 
 class Background(arcade.Sprite):
+    '''Background object, makes the star background move slightly offset to the movement of the rocket'''
     def __init__(self, parent):
         scale = 1
         image = f'sprites/backgrounds/space background.png'
@@ -375,11 +388,13 @@ class Background(arcade.Sprite):
         self.parent = parent
 
     def update(self):
+        '''Updates positon of background relative of that to the rocket (difference/20)'''
         self.center_x = self.parent.center_x - self.parent.center_x / 20
         self.center_y = self.parent.center_y - self.parent.center_y / 20
 
 
 class Counter(arcade.Sprite):
+    '''Class to show a thumbnail sprite and its current value i.e number of coins or lives'''
     def __init__(self, parent, count, offset_x, offset_y, image, scale=1):
         super().__init__(image, scale)
 
@@ -389,10 +404,12 @@ class Counter(arcade.Sprite):
         self.offset_y = offset_y
 
     def update(self):
+        '''Updates positon of counter to always be at a specific offset to the rocket'''
         self.center_x = self.parent.center_x + self.offset_x
         self.center_y = self.parent.center_y + self.offset_y
 
     def draw(self):
+        '''Draws the counter sprite and value onto the screen'''
         if self._sprite_list is None:
             self._sprite_list = arcade.SpriteList()
             self._sprite_list.append(self)
@@ -408,6 +425,7 @@ class Counter(arcade.Sprite):
 
 
 class Planet(arcade.Sprite):
+    '''Planet sprite class button list can be specified to add upgrade buttons on the specific planet'''
     def __init__(self, name, rocket, image, scale):
         super().__init__(image, scale)
         self.name = name
