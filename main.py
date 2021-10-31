@@ -29,6 +29,7 @@ USE_SPATIAL_HASHING = False
 
 won = False
 
+
 class GameView(arcade.View):
     def __init__(self):
         super().__init__()
@@ -44,7 +45,6 @@ class GameView(arcade.View):
         self.explosion_list = None
 
         self.dead = None
-
 
         self.coin_list = None
 
@@ -90,17 +90,13 @@ class GameView(arcade.View):
 
         self.shoot_progress_bar = sprites.ProgressBar(25, 'red')
 
-
         arcade.set_background_color(arcade.color.BLACK)
-        
+
         self.explosion_list = arcade.SpriteList()
-
-
 
         self.score = 0
 
         self.BASE_ASTEROID_COUNT = 100
-        
 
         self.existing_chunks = []
 
@@ -111,7 +107,8 @@ class GameView(arcade.View):
         self.rocket = sprites.Rocket('sprites/rocket/still.png')
         self.rocket_list.append(self.rocket)
 
-        self.asteroid_list = arcade.SpriteList(use_spatial_hash=USE_SPATIAL_HASHING)
+        self.asteroid_list = arcade.SpriteList(
+            use_spatial_hash=USE_SPATIAL_HASHING)
 
         self.planet_list = arcade.SpriteList()
 
@@ -119,13 +116,23 @@ class GameView(arcade.View):
 
         x = [random.randint(4000, 5000), random.randint(-5000, -4000)]
         y = [random.randint(4000, 5000), random.randint(-5000, -4000)]
-        self.mars = planets.Mars(self.rocket, random.choice(x), random.choice(y))
+        self.mars = planets.Mars(
+            self.rocket,
+            random.choice(x),
+            random.choice(y))
 
-        self.earth.button_list.append(buttons.UpgradeButton('Mars location', 'show_edge_marker_mars', self.rocket, 30, cost_multiplier = 0, upgrade_step = 1))
+        self.earth.button_list.append(
+            buttons.UpgradeButton(
+                'Mars location',
+                'show_edge_marker_mars',
+                self.rocket,
+                30,
+                cost_multiplier=0,
+                upgrade_step=1))
 
         self.planet_list.append(self.earth)
         self.planet_list.append(self.mars)
-        #self.planet_list.append(self.mars)
+        # self.planet_list.append(self.mars)
 
         self.edge_marker_list = arcade.SpriteList()
 
@@ -137,8 +144,20 @@ class GameView(arcade.View):
 
         self.position_buttons()
 
-        self.coin_counter = sprites.Counter(self.rocket, 'coins', -current_screen_width/2 + 50 , current_screen_height/2 - 50, 'sprites/coin/gold.png', 1.5)
-        self.lives_counter = sprites.Counter(self.rocket, 'lives', -current_screen_width/2 + 50 , current_screen_height/2 - 100, 'sprites/rocket/still.png', 0.25)
+        self.coin_counter = sprites.Counter(
+            self.rocket,
+            'coins',
+            -current_screen_width / 2 + 50,
+            current_screen_height / 2 - 50,
+            'sprites/coin/gold.png',
+            1.5)
+        self.lives_counter = sprites.Counter(
+            self.rocket,
+            'lives',
+            -current_screen_width / 2 + 50,
+            current_screen_height / 2 - 100,
+            'sprites/rocket/still.png',
+            0.25)
 
         self.populate_spawn_asteroids()
 
@@ -152,8 +171,6 @@ class GameView(arcade.View):
             self.music_player = self.music.play()
 
     def on_draw(self):
-        
-        
 
         arcade.start_render()
 
@@ -161,13 +178,14 @@ class GameView(arcade.View):
 
         self.planet_list.draw()
 
-
-
         self.coin_list.draw()
-        
-        if self.edge_marker_list[0].check_visibility(current_screen_width, current_screen_height):
+
+        if self.edge_marker_list[0].check_visibility(
+                current_screen_width, current_screen_height):
             self.edge_marker_list[0].draw()
-        if self.edge_marker_list[1].check_visibility(current_screen_width, current_screen_height) and self.rocket.show_edge_marker_mars:
+        if self.edge_marker_list[1].check_visibility(
+                current_screen_width,
+                current_screen_height) and self.rocket.show_edge_marker_mars:
             self.edge_marker_list[1].draw()
 
         for planet in self.planet_list:
@@ -180,8 +198,6 @@ class GameView(arcade.View):
 
         self.explosion_list.draw()
 
-
-
         self.fuel_progress_bar.draw()
         self.oxygen_progress_bar.draw()
         self.shoot_progress_bar.draw()
@@ -191,16 +207,15 @@ class GameView(arcade.View):
 
         self.rocket.bullet_list.draw()
 
-
-
     def on_update(self, delta_time):
-        
-        for planet in self.planet_list:
-            planet_hit_list = arcade.check_for_collision_with_list(planet, self.asteroid_list)
 
-            #if planet_hit_list:
-                #if planet.name == 'mars':
-                   # window.show_view(MenuView())
+        for planet in self.planet_list:
+            planet_hit_list = arcade.check_for_collision_with_list(
+                planet, self.asteroid_list)
+
+            # if planet_hit_list:
+            # if planet.name == 'mars':
+            # window.show_view(MenuView())
 
             for asteroid in planet_hit_list:
                 self.explosion_list.append(sprites.Explosion(asteroid))
@@ -210,9 +225,7 @@ class GameView(arcade.View):
         if self.rocket.lives <= 0:
             self.rocket.lives = 3
             window.show_view(LoseView())
-            
 
-        
         self.mars.coins = self.rocket.coins
 
         if self.music_enabled:
@@ -230,7 +243,7 @@ class GameView(arcade.View):
                 bullet.kill()
 
         self.coin_list.update()
-        #self.populate_coins()
+        # self.populate_coins()
 
         self.planet_list.update()
 
@@ -239,7 +252,8 @@ class GameView(arcade.View):
         self.asteroid_list.update()
 
         for planet in self.planet_list:
-            self.rocket.at_base = arcade.check_for_collision(self.rocket, planet)
+            self.rocket.at_base = arcade.check_for_collision(
+                self.rocket, planet)
 
             if self.rocket.at_base and planet.name == 'mars' and won == False:
                 window.show_view(WinView())
@@ -250,15 +264,16 @@ class GameView(arcade.View):
         else:
             self.rocket.at_base = False
 
-
-        coin_hit_list = arcade.check_for_collision_with_list(self.rocket, self.coin_list)
+        coin_hit_list = arcade.check_for_collision_with_list(
+            self.rocket, self.coin_list)
 
         for coin in coin_hit_list:
             coin.kill()
             self.rocket.coins += 5
 
         for bullet in self.rocket.bullet_list:
-            bullet_hit_list = arcade.check_for_collision_with_list(bullet, self.asteroid_list)
+            bullet_hit_list = arcade.check_for_collision_with_list(
+                bullet, self.asteroid_list)
             if bullet_hit_list:
                 bullet.kill()
                 for asteroid in bullet_hit_list:
@@ -278,28 +293,45 @@ class GameView(arcade.View):
 
         self.edge_marker_list.update()
 
-
-
         self.populate_asteroids()
 
-        arcade.set_viewport(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2,
-                            self.rocket.center_y-SCREEN_HEIGHT/2, self.rocket.center_y+SCREEN_HEIGHT/2)
+        arcade.set_viewport(
+            self.rocket.center_x - SCREEN_WIDTH / 2,
+            self.rocket.center_x + SCREEN_WIDTH / 2,
+            self.rocket.center_y - SCREEN_HEIGHT / 2,
+            self.rocket.center_y + SCREEN_HEIGHT / 2)
 
-        self.fuel_progress_bar.update(self.rocket.center_x, self.rocket.center_y, self.rocket.fuel/self.rocket.max_fuel)
-        self.oxygen_progress_bar.update(self.rocket.center_x, self.rocket.center_y, self.rocket.oxygen/self.rocket.max_oxygen)
-        self.shoot_progress_bar.update(self.rocket.center_x, self.rocket.center_y, self.rocket.last_shot/self.rocket.shoot_speed)
+        self.fuel_progress_bar.update(
+            self.rocket.center_x,
+            self.rocket.center_y,
+            self.rocket.fuel /
+            self.rocket.max_fuel)
+        self.oxygen_progress_bar.update(
+            self.rocket.center_x,
+            self.rocket.center_y,
+            self.rocket.oxygen /
+            self.rocket.max_oxygen)
+        self.shoot_progress_bar.update(
+            self.rocket.center_x,
+            self.rocket.center_y,
+            self.rocket.last_shot /
+            self.rocket.shoot_speed)
 
         self.background.update()
         for planet in self.planet_list:
             for button in planet.button_list:
-                button.check_mouse(MOUSE_X, MOUSE_Y, self.rocket.center_x, self.rocket.center_y, self.rocket.at_base)
+                button.check_mouse(
+                    MOUSE_X,
+                    MOUSE_Y,
+                    self.rocket.center_x,
+                    self.rocket.center_y,
+                    self.rocket.at_base)
 
         self.coin_counter.update()
         self.lives_counter.update()
 
-        asteroid_hit_list = arcade.check_for_collision_with_list(self.rocket, self.asteroid_list)
-
-
+        asteroid_hit_list = arcade.check_for_collision_with_list(
+            self.rocket, self.asteroid_list)
 
         if asteroid_hit_list:
             if not self.rocket.invincible:
@@ -314,15 +346,14 @@ class GameView(arcade.View):
             button_ = False
             for planet in self.planet_list:
                 for button in planet.button_list:
-                        button.on_click()
-                        if button.mouse_over:
-                            button_ = True
+                    button.on_click()
+                    if button.mouse_over:
+                        button_ = True
             if not button_:
                 self.rocket.thrusting = True
 
         if button == arcade.MOUSE_BUTTON_RIGHT:
             self.rocket.damping = True
-
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.SPACE:
@@ -345,35 +376,33 @@ class GameView(arcade.View):
             for button in planet.button_list:
                 if n % 2 == 0:
                     button.center_x = -100
-                    button.center_y = space / length * n -space/4
+                    button.center_y = space / length * n - space / 4
                 else:
                     button.center_x = 100
-                    button.center_y = space/length * (n-1) -space/4
-                n+= 1
+                    button.center_y = space / length * (n - 1) - space / 4
+                n += 1
 
     def on_show_view(self):
         self.ui_manager.purge_ui_elements()
-        arcade.set_viewport(self.rocket.center_x-SCREEN_WIDTH/2, self.rocket.center_x+SCREEN_WIDTH/2,
-                            self.rocket.center_y-SCREEN_HEIGHT/2, self.rocket.center_y+SCREEN_HEIGHT/2)
+        arcade.set_viewport(
+            self.rocket.center_x - SCREEN_WIDTH / 2,
+            self.rocket.center_x + SCREEN_WIDTH / 2,
+            self.rocket.center_y - SCREEN_HEIGHT / 2,
+            self.rocket.center_y + SCREEN_HEIGHT / 2)
 
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
 
-
-
-
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
-        
-
 
     def get_exterior_coords(self):
 
         # Get coordinates of screen edge
-        left = self.rocket.center_x - SCREEN_WIDTH/2
-        right = self.rocket.center_x + SCREEN_WIDTH/2
+        left = self.rocket.center_x - SCREEN_WIDTH / 2
+        right = self.rocket.center_x + SCREEN_WIDTH / 2
 
-        top = self.rocket.center_y + SCREEN_HEIGHT/2
-        bottom = self.rocket.center_y - SCREEN_HEIGHT/2
+        top = self.rocket.center_y + SCREEN_HEIGHT / 2
+        bottom = self.rocket.center_y - SCREEN_HEIGHT / 2
 
         return left, right, top, bottom
 
@@ -397,19 +426,23 @@ class GameView(arcade.View):
 
         for i in range(amount):
 
-            center_x = random.randint(-current_screen_width/2 - 100, current_screen_width/2 + 100)
-            center_y = random.randint(-current_screen_width/2-100, current_screen_height/2 + 100)
+            center_x = random.randint(-current_screen_width /
+                                      2 - 100, current_screen_width / 2 + 100)
+            center_y = random.randint(-current_screen_width /
+                                      2 - 100, current_screen_height / 2 + 100)
 
             num = random.random()
             if num <= 0.8:
-                type = 'brown' #80% chance of default asteroid
+                type = 'brown'  # 80% chance of default asteroid
             elif num <= 0.9:
                 type = 'coin'  # 10%
             elif num <= 0.95:
                 type = 'fuel'  # 5%
             else:
-                type = 'time' # 5%
-            self.asteroid_list.append(sprites.Asteroid(center_x, center_y, type = type))
+                type = 'time'  # 5%
+            self.asteroid_list.append(
+                sprites.Asteroid(
+                    center_x, center_y, type=type))
 
     def populate_asteroids(self):
 
@@ -433,47 +466,53 @@ class GameView(arcade.View):
         for i in range(amount):
 
             while True:
-                center_x = random.randint(left-100, right+100)
-                center_y = random.randint(bottom-100, top+100)
+                center_x = random.randint(left - 100, right + 100)
+                center_y = random.randint(bottom - 100, top + 100)
 
-                if center_x > left-20 and center_x < right+20 and center_y > bottom-20 and center_y < top+20:
+                if center_x > left - 20 and center_x < right + \
+                        20 and center_y > bottom - 20 and center_y < top + 20:
                     continue
                 break
             num = random.random()
             if num <= 0.8:
-                type = 'brown' #80% chance of default asteroid
+                type = 'brown'  # 80% chance of default asteroid
             elif num <= 0.9:
                 type = 'coin'  # 10%
             elif num <= 0.95:
                 type = 'fuel'  # 5%
             else:
-                type = 'time' # 5%
-            self.asteroid_list.append(sprites.Asteroid(center_x, center_y, type = type))
+                type = 'time'  # 5%
+            self.asteroid_list.append(
+                sprites.Asteroid(
+                    center_x, center_y, type=type))
 
     def populate_coins(self):
-        chunk_x = round(self.rocket.center_x/1000)
-        chunk_y = round(self.rocket.center_y/1000)
+        chunk_x = round(self.rocket.center_x / 1000)
+        chunk_y = round(self.rocket.center_y / 1000)
 
         nearby_chunks = []
 
         for i in range(-1, 2):
             for j in range(-1, 2):
-                nearby_chunks.append((chunk_x+i, chunk_y + j))
+                nearby_chunks.append((chunk_x + i, chunk_y + j))
         for chunk in nearby_chunks:
             if chunk not in self.existing_chunks:
                 self.existing_chunks.append(chunk)
-                number_of_coins = self.MAX_COINS + int((chunk[0]**2 + chunk[1]**2)**0.5 /3)
+                number_of_coins = self.MAX_COINS + \
+                    int((chunk[0]**2 + chunk[1]**2)**0.5 / 3)
                 number_of_coins = random.randint(1, number_of_coins)
-                for i in range (0, number_of_coins):
-                    coin_x = random.randint(chunk[0] * 1000, chunk[0] * 1000 + 1000)
-                    coin_y = random.randint(chunk[1] * 1000, chunk[1] * 1000 + 1000)
+                for i in range(0, number_of_coins):
+                    coin_x = random.randint(
+                        chunk[0] * 1000, chunk[0] * 1000 + 1000)
+                    coin_y = random.randint(
+                        chunk[1] * 1000, chunk[1] * 1000 + 1000)
                     self.coin_list.append(sprites.Coin(coin_x, coin_y, 0.05))
-
 
     def on_mouse_motion(self, x, y, dx, dy):
         global MOUSE_X, MOUSE_Y
         MOUSE_X = x
         MOUSE_Y = y
+
 
 class WinView(arcade.View):
     def __init__(self):
@@ -482,16 +521,14 @@ class WinView(arcade.View):
         self.ui_manager = UIManager()
         self.background_sprite = None
 
-
     def on_draw(self):
         arcade.start_render()
 
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
 
-        arcade.set_viewport(0, current_screen_width - 1, 0, current_screen_height - 1)
-
-
+        arcade.set_viewport(0, current_screen_width - 1,
+                            0, current_screen_height - 1)
 
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
@@ -499,34 +536,41 @@ class WinView(arcade.View):
         self.background_sprite.draw()
         self.victory_sprite.draw()
 
-        self.background_sprite.center_x = current_screen_width/2
-        self.background_sprite.center_y = current_screen_width/2
+        self.background_sprite.center_x = current_screen_width / 2
+        self.background_sprite.center_y = current_screen_width / 2
 
-        arcade.draw_text('Thats all the content in the game for now, feel free to continue in free play by pressing this button!', x_slot, y_slot * 2, arcade.color.GREEN)
-        
+        arcade.draw_text(
+            'Thats all the content in the game for now, feel free to continue in free play by pressing this button!',
+            x_slot,
+            y_slot *
+            2,
+            arcade.color.GREEN)
 
     def setup(self):
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
-        self.victory_sprite = arcade.Sprite('sprites/menu/victory.png', 1, center_x = x_slot * 2, center_y = y_slot * 3)
+        self.victory_sprite = arcade.Sprite(
+            'sprites/menu/victory.png',
+            1,
+            center_x=x_slot * 2,
+            center_y=y_slot * 3)
 
-        self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1)
-        self.background_sprite.center_x = 1280/2
-        self.background_sprite.center_y = 720/2
+        self.background_sprite = arcade.Sprite(
+            'sprites/backgrounds/space background.png', 1)
+        self.background_sprite.center_x = 1280 / 2
+        self.background_sprite.center_y = 720 / 2
 
         #self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1, 1280/2, 720/2)
-
 
         button = buttons.ChangeViewButton(
             'Play',
             x_slot,
             y_slot,
             game_view,
-            width = 250
+            width=250
         )
 
         self.ui_manager.add_ui_element(button)
-
 
     def on_hide_view(self):
         self.ui_manager.unregister_handlers()
@@ -535,7 +579,9 @@ class WinView(arcade.View):
         self.setup()
         global won
         won = True
-        arcade.set_viewport(0, current_screen_width - 1, 0, current_screen_height - 1)
+        arcade.set_viewport(0, current_screen_width - 1,
+                            0, current_screen_height - 1)
+
 
 class LoseView(arcade.View):
     def __init__(self):
@@ -544,14 +590,13 @@ class LoseView(arcade.View):
         self.ui_manager = UIManager()
         self.background_sprite = None
 
-
     def on_draw(self):
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
 
-        arcade.set_viewport(0, current_screen_width - 1, 0, current_screen_height - 1)
+        arcade.set_viewport(0, current_screen_width - 1,
+                            0, current_screen_height - 1)
         arcade.start_render()
-
 
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
@@ -559,36 +604,36 @@ class LoseView(arcade.View):
         self.background_sprite.draw()
         self.lose_sprite.draw()
 
-
-        self.background_sprite.center_x = x_slot* 2
+        self.background_sprite.center_x = x_slot * 2
         self.background_sprite.center_y = y_slot * 2
 
-
         arcade.draw_text('You lost!', x_slot, y_slot * 2, arcade.color.RED)
-        
 
     def setup(self):
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
-        self.lose_sprite = arcade.Sprite('sprites/menu/failure.png', 1, center_x = x_slot * 2, center_y = y_slot * 3)
+        self.lose_sprite = arcade.Sprite(
+            'sprites/menu/failure.png',
+            1,
+            center_x=x_slot * 2,
+            center_y=y_slot * 3)
 
-        self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1)
-        self.background_sprite.center_x = 1280/2
-        self.background_sprite.center_y = 720/2
+        self.background_sprite = arcade.Sprite(
+            'sprites/backgrounds/space background.png', 1)
+        self.background_sprite.center_x = 1280 / 2
+        self.background_sprite.center_y = 720 / 2
 
         #self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1, 1280/2, 720/2)
-
 
         button = buttons.ChangeViewButton(
             'Play Again',
             x_slot,
             y_slot,
             game_view,
-            width = 250
+            width=250
         )
 
         self.ui_manager.add_ui_element(button)
-
 
     def on_hide_view(self):
         self.ui_manager.unregister_handlers()
@@ -597,8 +642,6 @@ class LoseView(arcade.View):
         self.setup()
 
         game_view.setup()
-
-
 
 
 class MenuView(arcade.View):
@@ -610,17 +653,14 @@ class MenuView(arcade.View):
     def on_draw(self):
         arcade.start_render()
         self.logo.draw()
-        
 
     def on_show_view(self):
         self.setup()
         arcade.set_background_color(arcade.color.BLACK)
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
 
-
     def on_hide_view(self):
         self.ui_manager.unregister_handlers()
-
 
     def setup(self):
         self.ui_manager.purge_ui_elements()
@@ -628,45 +668,50 @@ class MenuView(arcade.View):
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
 
-        self.logo = arcade.Sprite('sprites/menu/logo.png', 1, center_x = x_slot * 2, center_y = y_slot * 3)
+        self.logo = arcade.Sprite(
+            'sprites/menu/logo.png',
+            1,
+            center_x=x_slot * 2,
+            center_y=y_slot * 3)
 
         button = buttons.ChangeViewButton(
             'Play',
             x_slot,
             y_slot,
             game_view,
-            width = 250
+            width=250
         )
 
         self.ui_manager.add_ui_element(button)
 
         button = buttons.ChangeViewButton(
             'Tutorial',
-            x_slot*3,
-            y_slot*2,
+            x_slot * 3,
+            y_slot * 2,
             TutorialView(),
-            width = 250
+            width=250
         )
 
         self.ui_manager.add_ui_element(button)
 
         button = buttons.FullScreenButton(
             'Toggle Fullscreen',
-            x_slot *2,
+            x_slot * 2,
             y_slot,
-            width = 250
+            width=250
         )
 
         self.ui_manager.add_ui_element(button)
 
         button = buttons.MusicButton(
             game_view,
-            x_slot *3,
+            x_slot * 3,
             y_slot,
-            width = 250
+            width=250
         )
 
         self.ui_manager.add_ui_element(button)
+
 
 class TutorialView(arcade.View):
     def __init__(self):
@@ -677,33 +722,28 @@ class TutorialView(arcade.View):
     def on_draw(self):
         arcade.start_render()
 
-
         self.background_sprite.draw()
         self.tutorial.draw()
 
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
 
-        arcade.set_viewport(0, current_screen_width - 1, 0, current_screen_height - 1)
+        arcade.set_viewport(0, current_screen_width - 1,
+                            0, current_screen_height - 1)
 
-        self.tutorial.center_x = current_screen_width/2
-        self.tutorial.center_y = current_screen_height/2
+        self.tutorial.center_x = current_screen_width / 2
+        self.tutorial.center_y = current_screen_height / 2
 
-        self.background_sprite.center_x = current_screen_width/2
-        self.background_sprite.center_y = current_screen_height/2
+        self.background_sprite.center_x = current_screen_width / 2
+        self.background_sprite.center_y = current_screen_height / 2
 
     def on_show_view(self):
         self.setup()
         arcade.set_background_color(arcade.color.BLACK)
         arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
 
-
-
-
-
     def on_hide_view(self):
         self.ui_manager.unregister_handlers()
-
 
     def setup(self):
         self.ui_manager.purge_ui_elements()
@@ -711,24 +751,25 @@ class TutorialView(arcade.View):
         y_slot = SCREEN_HEIGHT // 4
         x_slot = SCREEN_WIDTH // 4
 
-
-        self.tutorial = arcade.Sprite('sprites/menu/tutorial.png', 1, center_x = x_slot * 2, center_y = y_slot * 2)
-        self.background_sprite = arcade.Sprite('sprites/backgrounds/space background.png', 1)
-        self.background_sprite.center_x = 1280/2
-        self.background_sprite.center_y = 720/2
+        self.tutorial = arcade.Sprite(
+            'sprites/menu/tutorial.png',
+            1,
+            center_x=x_slot * 2,
+            center_y=y_slot * 2)
+        self.background_sprite = arcade.Sprite(
+            'sprites/backgrounds/space background.png', 1)
+        self.background_sprite.center_x = 1280 / 2
+        self.background_sprite.center_y = 720 / 2
 
         button = buttons.ChangeViewButton(
             'Back',
             x_slot,
             y_slot,
             MenuView(),
-            width = 250
+            width=250
         )
 
         self.ui_manager.add_ui_element(button)
-
-
-
 
 
 class MyGame(arcade.Window):
@@ -740,10 +781,10 @@ class MyGame(arcade.Window):
             # User hits f. Flip between full and not full screen.
             self.set_fullscreen(not self.fullscreen)
 
-
     def on_resize(self, width, height):
         global current_screen_width, current_screen_height
         current_screen_width, current_screen_height = self.get_size()
+
 
 if __name__ == '__main__':
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, 'Asteroids++')
