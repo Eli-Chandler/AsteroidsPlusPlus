@@ -13,7 +13,8 @@ class ChangeViewButton(arcade.gui.UIFlatButton):
 
     def on_click(self):
 
-        self.window.show_view(self.view) # Sets view to view specified in object
+        # Sets view to view specified in object
+        self.window.show_view(self.view)
 
 
 class MusicButton(arcade.gui.UIFlatButton):
@@ -27,7 +28,8 @@ class MusicButton(arcade.gui.UIFlatButton):
 
     def on_click(self):
 
-        self.view.music_enabled = not self.view.music_enabled # If music = True it will set it to false and vice-versa
+        # If music = True it will set it to false and vice-versa
+        self.view.music_enabled = not self.view.music_enabled
 
 
 class FullScreenButton(arcade.gui.UIFlatButton):
@@ -40,7 +42,8 @@ class FullScreenButton(arcade.gui.UIFlatButton):
 
     def on_click(self):
 
-        self.window.set_fullscreen(not self.window.fullscreen) # If fullscreen = True it will set it to false and vice-versa
+        # If fullscreen = True it will set it to false and vice-versa
+        self.window.set_fullscreen(not self.window.fullscreen)
 
 
 class ToggleAttributeButton(arcade.gui.UIFlatButton):
@@ -111,8 +114,8 @@ class UpgradeButton():
         x = x / current_screen_width * 1280
         y = y / current_screen_height * 720
 
-        if x <= self.center_x + 50 and x >= self.center_x - \
-                50 and y <= self.center_y + 15 and y >= self.center_y - 15 and at_base: # Checks if mouse is positioned over button
+        if x <= self.center_x + 50 and x >= self.center_x - 50 and y <= self.center_y + \
+                15 and y >= self.center_y - 15 and at_base:  # Checks if mouse is positioned over button
             self.mouse_over = True
         else:
             self.mouse_over = False
@@ -120,24 +123,33 @@ class UpgradeButton():
     def on_click(self):
         '''Called when a button is clicked, checks if the player has enough coins and calls the subjects upgrade function if so'''
         if self.subject.coins >= self.cost and self.mouse_over:
+            # Calls subject upgrade function - needs to be used to reassign
+            # outside object
             self.subject.upgrade(
                 self.upgrade,
                 self.upgrade_step,
-                self.upgrade_multiplier) # Calls subject upgrade function - needs to be used to reassign outside object
+                self.upgrade_multiplier)
             self.subject.coins -= self.cost
-            self.cost *= self.cost_multiplier # increases cost by multiplier (default is 1 so no change)
+            # increases cost by multiplier (default is 1 so no change)
+            self.cost *= self.cost_multiplier
             self.cost = int(self.cost)
 
     def draw(self, at_base):
         '''Draw the button, if mouse is positioned over it a white outline will appear'''
         if at_base:
             if self.mouse_over:
+                # If mouse is over the button a white box will be drawn around
+                # it
                 arcade.draw_rectangle_filled(
-                    self.center_x, self.center_y, 110, 40, arcade.color.WHITE) # If mouse is over the button a white box will be drawn around it
+                    self.center_x, self.center_y, 110, 40, arcade.color.WHITE)
             arcade.draw_rectangle_filled(
-                self.center_x, self.center_y, 100, 30, arcade.color.GRAY) # Draws grey box around text for visibility
+                self.center_x,
+                self.center_y,
+                100,
+                30,
+                arcade.color.GRAY)  # Draws grey box around text for visibility
             arcade.draw_text(
                 self.text + f'\n({self.cost} Coins)',
                 self.center_x - 35,
                 self.center_y - 15,
-                arcade.color.BLACK) # Draw text for button including cost and name
+                arcade.color.BLACK)  # Draw text for button including cost and name

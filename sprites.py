@@ -75,7 +75,8 @@ class Rocket(arcade.Sprite):
 
         mouse_x_relative = mouse_x - current_screen_width / 2
         mouse_y_relative = mouse_y - current_screen_height / 2
-        # Sets direction of sprite to point towards mouse from center of the screen
+        # Sets direction of sprite to point towards mouse from center of the
+        # screen
         self.radians = math.atan2(mouse_y_relative, mouse_x_relative) - 1.5708
 
         # Finds direction of rocket in radians
@@ -110,16 +111,21 @@ class Rocket(arcade.Sprite):
                 if abs(change) > abs(self.delta_y):
                     self.delta_y = 0
                 else:
-                    self.delta_y += change # Figures if the rocket is moving up, down left or right and damps velocity accordingly
+                    # Figures if the rocket is moving up, down left or right
+                    # and damps velocity accordingly
+                    self.delta_y += change
         elif self.thrusting and self.fuel > 0:
             self.fuel -= 1 * delta_time
             self.delta_x += -self.thrusters * \
                 math.sin(self.radians) * delta_time
+            # If left clicking and have fuel the rocket will thrust towards
+            # mouse
             self.delta_y += self.thrusters * \
-                math.cos(self.radians) * delta_time # If left clicking and have fuel the rocket will thrust towards mouse
+                math.cos(self.radians) * delta_time
 
         self.center_x += self.delta_x * delta_time
-        self.center_y += self.delta_y * delta_time # Updates position relative to frame time
+        # Updates position relative to frame time
+        self.center_y += self.delta_y * delta_time
 
     def die(self):
         '''Called when the rocket collides with an asteroid, resets the position and coins of the rocket and removes 1 life
@@ -132,23 +138,25 @@ class Rocket(arcade.Sprite):
 
         self.coins = 0
 
-        self.lives -= 1 # Subtracts a life and resets position of rocket
+        self.lives -= 1  # Subtracts a life and resets position of rocket
 
         arcade.play_sound(self.death_sound)
 
     def shoot(self):
         '''function to make the rocket shoot, the function first checks if the time since the last shot is greater than the shoot speed,
         than creates a new bullet object and adds it to the rockets bullet list'''
-        if self.last_shot < self.shoot_speed: # Checks if time since last shot is less than shot speed
+        if self.last_shot < self.shoot_speed:  # Checks if time since last shot is less than shot speed
             return
 
         arcade.play_sound(self.shoot_sound)
 
         self.delta_x -= -self.recoil * math.sin(self.radians)
-        self.delta_y -= self.recoil * math.cos(self.radians) # Pushes back rocket opposite the direction of shot
+        # Pushes back rocket opposite the direction of shot
+        self.delta_y -= self.recoil * math.cos(self.radians)
 
         delta_x = self.delta_x - 100 * math.sin(self.radians)
-        delta_y = self.delta_y + 100 * math.cos(self.radians) # Creates greater speed for bullet based on rockets speed
+        # Creates greater speed for bullet based on rockets speed
+        delta_y = self.delta_y + 100 * math.cos(self.radians)
         self.bullet_list.append(
             Bullet(
                 self.center_x,
@@ -157,7 +165,7 @@ class Rocket(arcade.Sprite):
                 delta_y,
                 self.angle,
                 self.bullet_max_age))
-        self.last_shot = 0 # resets time since last shot
+        self.last_shot = 0  # resets time since last shot
 
     # mode can be step or multiply depending on how we want to increase the
     # attribute
@@ -186,8 +194,8 @@ class Marker(arcade.Sprite):
         self.center_x = origin.center_x
         self.center_y = origin.center_y
 
-        self.origin = origin # Sets origin - object that the marker should be centered around
-        self.target = target # Sets target - object that the marker should be pointed at
+        self.origin = origin  # Sets origin - object that the marker should be centered around
+        self.target = target  # Sets target - object that the marker should be pointed at
 
     def update(self):
         '''Updates postion of marker'''
@@ -197,7 +205,8 @@ class Marker(arcade.Sprite):
         relative_x = self.center_x - self.target.center_x
         relative_y = self.center_y - self.target.center_y
 
-        self.radians = math.atan2(relative_y, relative_x) - 1.5708 # Sets angle of marker to point towards target
+        # Sets angle of marker to point towards target
+        self.radians = math.atan2(relative_y, relative_x) - 1.5708
 
     def check_visibility(self, screen_width, screen_height):
         '''Function to check if marker needs to be visible, i.e if planet of marker is on screen it won't be drawn'''
@@ -209,7 +218,7 @@ class Marker(arcade.Sprite):
                 screen_width / 2 < self.target.center_x:
             if self.center_y + screen_height / 2 > self.target.center_y and self.center_y - \
                     screen_height / 2 < self.target.center_y:
-                return False # If the target is on screen return false
+                return False  # If the target is on screen return false
         return True
 
 
@@ -237,7 +246,7 @@ class Bullet(arcade.Sprite):
         self.center_x += self.delta_x * delta_time
         self.center_y += self.delta_y * delta_time
 
-        self.age += 1 * delta_time # Adds time between updates to bullets age
+        self.age += 1 * delta_time  # Adds time between updates to bullets age
 
 
 ASTEROID_MIN_SIZE = 0.1
@@ -259,15 +268,22 @@ class Asteroid(arcade.Sprite):
         self.center_y = center_y
 
         self.delta_x = random.uniform(-ASTEROID_MAX_VELOCITY,
-                                      ASTEROID_MAX_VELOCITY) 
+                                      ASTEROID_MAX_VELOCITY)
+        # Sets random value between the min and max values for asteroid speed
         self.delta_y = random.uniform(-ASTEROID_MAX_VELOCITY,
-                                      ASTEROID_MAX_VELOCITY) # Sets random value between the min and max values for asteroid speed
+                                      ASTEROID_MAX_VELOCITY)
 
+        # Sets random rotation speed (Can go clockwise or counter clockwise)
         self.rotation_speed = random.uniform(
-            -ASTEROID_MAX_ROTATION_SPEED, ASTEROID_MAX_ROTATION_SPEED) # Sets random rotation speed (Can go clockwise or counter clockwise)
+            -ASTEROID_MAX_ROTATION_SPEED,
+            ASTEROID_MAX_ROTATION_SPEED)
 
-        self.scale = random.uniform(ASTEROID_MIN_SIZE, ASTEROID_MAX_SIZE) # Sets random size
-        self.angle = random.randint(0, 360) # Sets random starting angle - so asteroids aren't synced up when spawning
+        self.scale = random.uniform(
+            ASTEROID_MIN_SIZE,
+            ASTEROID_MAX_SIZE)  # Sets random size
+        # Sets random starting angle - so asteroids aren't synced up when
+        # spawning
+        self.angle = random.randint(0, 360)
 
         self.explosion_sound = arcade.Sound(
             'sounds/explosion.mp3', streaming=True)
@@ -300,7 +316,9 @@ EXPLOSION_MAX_AGE = 0.5  # Constant defining max age of explosions in seconds
 class Explosion(arcade.Sprite):
     '''Class to create explosion sprite, animation will play at different speed depending on EXPLOSION_MAX_AGE (Default value = 0.5)'''
 
-    def __init__(self, obj, EXPLOSION_MAX_AGE=EXPLOSION_MAX_AGE): # Object can be passed in to get position, angle instead of passing in individually
+    # Object can be passed in to get position, angle instead of passing in
+    # individually
+    def __init__(self, obj, EXPLOSION_MAX_AGE=EXPLOSION_MAX_AGE):
         scale = obj.scale * 1.7
         image = 'sprites/explosion/explosion1_new.png'
         super().__init__(image, scale)
@@ -328,15 +346,16 @@ class Explosion(arcade.Sprite):
             'explosion4_new.png',
             'explosion5_new.png',
             'explosion6_new.png',
-        ] # List of each frame of animation
+        ]  # List of each frame of animation
 
         self.texture = arcade.sprite.load_texture(
-            f'sprites/explosion/{self.texture_list[0]}') # Loads first texture to begin with
+            f'sprites/explosion/{self.texture_list[0]}')  # Loads first texture to begin with
 
         self.age = 0
         self.max_age = EXPLOSION_MAX_AGE
 
-        self.anim_frame_time = self.max_age / len(self.texture_list) # Sets time for frames based on max age of explosion
+        # Sets time for frames based on max age of explosion
+        self.anim_frame_time = self.max_age / len(self.texture_list)
         self.current_frame_time = self.anim_frame_time
 
     def update(self, delta_time):
@@ -349,10 +368,10 @@ class Explosion(arcade.Sprite):
         if self.age >= self.current_frame_time:
             try:
                 self.texture = arcade.sprite.load_texture(
-                    f'sprites/explosion/{self.texture_list[self.current_texture]}') # Displays current frame of animation
+                    f'sprites/explosion/{self.texture_list[self.current_texture]}')  # Displays current frame of animation
             except BaseException:
-                self.kill() # If out of sprites kill explosion
-            self.current_texture += 1 # Increases animation frame by one
+                self.kill()  # If out of sprites kill explosion
+            self.current_texture += 1  # Increases animation frame by one
             self.current_frame_time += self.anim_frame_time
 
 
@@ -383,8 +402,11 @@ class ProgressBar(arcade.Sprite):
         current_screen_width = arcade.get_window().width
         current_screen_height = arcade.get_window().height
 
-        self.center_x = center_x - 1280 + (self.scale * 1280 * percentage) # Positions at center of screen with offset based on current value/max value on x axis
-        self.center_y = center_y - 720 / 2 + self.y_height # Positions at bottom of screen with offset on y axis
+        # Positions at center of screen with offset based on current value/max
+        # value on x axis
+        self.center_x = center_x - 1280 + (self.scale * 1280 * percentage)
+        # Positions at bottom of screen with offset on y axis
+        self.center_y = center_y - 720 / 2 + self.y_height
 
 
 class Background(arcade.Sprite):
@@ -400,7 +422,8 @@ class Background(arcade.Sprite):
     def update(self):
         '''Updates positon of background relative of that to the rocket (difference/20)'''
         self.center_x = self.parent.center_x - self.parent.center_x / 20
-        self.center_y = self.parent.center_y - self.parent.center_y / 20 # Background shifts off by 1/20th of the rockets movement
+        self.center_y = self.parent.center_y - self.parent.center_y / \
+            20  # Background shifts off by 1/20th of the rockets movement
 
 
 class Counter(arcade.Sprite):
@@ -409,15 +432,15 @@ class Counter(arcade.Sprite):
     def __init__(self, parent, count, offset_x, offset_y, image, scale=1):
         super().__init__(image, scale)
 
-        self.parent = parent # Defines parent - object that the attribute is part of
-        self.count = count # Attribute to count
+        self.parent = parent  # Defines parent - object that the attribute is part of
+        self.count = count  # Attribute to count
         self.offset_x = offset_x
         self.offset_y = offset_y
 
     def update(self):
         '''Updates positon of counter to always be at a specific offset to the rocket'''
         self.center_x = self.parent.center_x + self.offset_x
-        self.center_y = self.parent.center_y + self.offset_y # Updates position
+        self.center_y = self.parent.center_y + self.offset_y  # Updates position
 
     def draw(self):
         '''Draws the counter sprite and value onto the screen'''
@@ -432,7 +455,7 @@ class Counter(arcade.Sprite):
                          self.center_x + 32 * len(str(count)),
                          self.center_y - self.height / 4,
                          arcade.color.WHITE,
-                         32) # Draws text for the count
+                         32)  # Draws text for the count
 
 
 class Planet(arcade.Sprite):
@@ -442,7 +465,7 @@ class Planet(arcade.Sprite):
         super().__init__(image, scale)
         self.name = name
         self.button_list = []
-        self.rocket = rocket # Passes in rocket to be referenced in planet object methods
+        self.rocket = rocket  # Passes in rocket to be referenced in planet object methods
 
     def on_collision(self):
         pass
